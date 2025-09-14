@@ -191,3 +191,24 @@ def created():
     </body>
 </html>
 ''', 201
+
+@app.route("/cause500")
+def cause500():
+    return 1 / 0  
+
+@app.errorhandler(500)
+def internal_server_error(err):
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>Ошибка 500</title>
+    </head>
+    <body>
+        <h1>Внутренняя ошибка сервера (500)</h1>
+        <p>Что-то пошло не так. Попробуйте позже.</p>
+        <a href="/">На главную</a>
+    </body>
+</html>
+''', 500
+
