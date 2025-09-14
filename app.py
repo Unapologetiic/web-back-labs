@@ -138,7 +138,12 @@ def image():
         <img src="''' + path + '''">
     </body>
 </html>
-'''
+''',200, {
+        'Content-Language': 'ru-RU',  
+        'X-Custom-Header': 'MyCustomValue',  
+        'X-Developer-Name': 'Yana-Kudeyarova' 
+    }
+
 count = 0
 
 @app.route('/lab1/counter')
@@ -162,6 +167,7 @@ def counter():
     </body>
 </html>
 '''
+
 @app.route('/lab1/reset_counter')
 def reset_counter():
     global count
