@@ -69,8 +69,31 @@ def teapot():
     return "418 — Я — чайник", 418
 
 @app.errorhandler(404)
-def not_found(err):
-    return "нет такой страницы", 404
+def page_not_found(err):
+    photo = url_for("static", filename="404.jpg")
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>Страница не найдена (404)</title>
+        <style>
+            body { background-color: #fdf6e3; text-align: center; font-family: Arial; }
+            h1 { color: #dc143c; }
+            p { color: #555; }
+            img { max-width: 300px; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h1>Ой! Такой страницы нет (404)</h1>
+        <p>
+            Похоже, вы свернули не туда. Вернитесь 
+            <a href="/">на главную</a>.
+        </p>
+        <img src="''' + photo + '''">
+    </body>
+</html>
+''', 404
+
 
 @app.route("/lab1/web")
 def web():
