@@ -40,10 +40,30 @@ def lab1():
             называемых микрофреймворков — минималистичных каркасов
             веб-приложений, сознательно предоставляющих лишь самые базовые возможности.
         </p>
+        
+        <h2>Список роутов</h2>
+        <ul>
+            <li><a href="/lab1/web">/lab1/web</a> - Web сервер</li>
+            <li><a href="/lab1/author">/lab1/author</a> - Информация об авторе</li>
+            <li><a href="/lab1/image">/lab1/image</a> - Изображение</li>
+            <li><a href="/lab1/counter">/lab1/counter</a> - Счетчик посещений</li>
+            <li><a href="/lab1/reset_counter">/lab1/reset_counter</a> - Сброс счетчика</li>
+            <li><a href="/lab1/info">/lab1/info</a> - Перенаправление</li>
+            <li><a href="/lab1/created">/lab1/created</a> - Успешное создание</li>
+            <li><a href="/400">/400</a> - Неверный запрос</li>
+            <li><a href="/401">/401</a> - Не авторизован</li>
+            <li><a href="/402">/402</a> - Необходима оплата</li>
+            <li><a href="/403">/403</a> - Доступ запрещен</li>
+            <li><a href="/405">/405</a> - Метод не разрешен</li>
+            <li><a href="/418">/418</a> - Я чайник</li>
+            <li><a href="/cause500">/cause500</a> - Вызвать ошибку 500</li>
+        </ul>
+        
         <a href="/">На главную</a>
     </body>
 </html>
 '''
+
 @app.route("/400")
 def bad_request():
     return "400 — Неверный запрос", 400
