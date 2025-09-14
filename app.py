@@ -44,6 +44,29 @@ def lab1():
     </body>
 </html>
 '''
+@app.route("/400")
+def bad_request():
+    return "400 — Неверный запрос", 400
+
+@app.route("/401")
+def unauthorized():
+    return "401 — Не авторизован", 401
+
+@app.route("/402")
+def payment_required():
+    return "402 — Необходима оплата", 402
+
+@app.route("/403")
+def forbidden():
+    return "403 — Доступ запрещён", 403
+
+@app.route("/405")
+def method_not_allowed():
+    return "405 — Метод не разрешён", 405
+
+@app.route("/418")
+def teapot():
+    return "418 — Я — чайник", 418
 
 @app.errorhandler(404)
 def not_found(err):
