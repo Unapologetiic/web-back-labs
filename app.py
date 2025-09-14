@@ -28,18 +28,18 @@ def author():
                 </body>
             </html>"""
 
-@app.route('/image')
+@app.route("/image")
 def image():
     path = url_for("static", filename="oak.jpg")
-    return """
+    return '''
 <!doctype html>
 <html>
     <body>
         <h1>Дуб</h1>
-        <img src= "''' + path +'''">
+        <img src="''' + path + '''">
     </body>
-</html>"""
-
+</html>
+'''
 count = 0
 
 @app.route('/counter')
