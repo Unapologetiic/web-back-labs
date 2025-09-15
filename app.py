@@ -270,7 +270,7 @@ def reset_counter():
 
 @app.route("/lab1/info")
 def info():
-    return redirect("/author")
+    return redirect("/lab1/author")
 
 @app.route("/lab1/created")
 def created():
