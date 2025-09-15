@@ -263,7 +263,7 @@ def reset_counter():
 <html>
     <body>
         Счётчик сброшен! <br>
-        <a href="/counter">Вернуться к счётчику</a>
+        <a href="/lab1/counter">Вернуться к счётчику</a>
     </body>
 </html>
 '''
