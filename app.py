@@ -88,32 +88,22 @@ def method_not_allowed():
 def teapot():
     return "418 — Я — чайник", 418
 
-
-
-# Глобальная переменная для лога
 access_log = []
 
 @app.errorhandler(404)
 def page_not_found(err):
-    # Получаем информацию о запросе
     user_ip = request.remote_addr
     access_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     requested_url = request.url
-    
-    # Добавляем запись в лог
     access_log.append({
         'ip': user_ip,
         'date': access_date,
         'url': requested_url
     })
-    
     photo = url_for("static", filename="404.jpg")
-    
-    # Формируем HTML с логом (последние 5 записей)
     log_html = ""
     for entry in reversed(access_log[-5:]):
         log_html += '<tr><td>' + entry['ip'] + '</td><td>' + entry['date'] + '</td><td>' + entry['url'] + '</td></tr>'
-    
     return '''
 <!doctype html>
 <html>
@@ -190,7 +180,6 @@ def page_not_found(err):
 </body>
 </html>
 ''', 404
-
 
 @app.route("/lab1/web")
 def web():
