@@ -7,9 +7,11 @@ lab2 = Blueprint('lab2', __name__)
 def a():
     return 'без слэша'
 
+
 @lab2.route('/lab2/a/')
 def a2():
     return 'со слэшом'
+
 
 flower_list = [
     {'name': 'роза', 'price': 300},
@@ -18,9 +20,11 @@ flower_list = [
     {'name': 'ромашка', 'price': 330}
 ]
 
+
 @lab2.route('/lab2/all_flowers')
 def all_flowers():
     return render_template('all_flowers.html', flowers=flower_list)
+
 
 @lab2.route('/lab2/add_flower/')
 def add_flower():
@@ -30,6 +34,7 @@ def add_flower():
     flower_list.lab2end({'name': name, 'price': 300})
     return redirect('/lab2/all_flowers')
 
+
 @lab2.route('/lab2/del_flower/<int:flower_id>')
 def del_flower(flower_id):
     if flower_id < 0 or flower_id >= len(flower_list):
@@ -37,10 +42,12 @@ def del_flower(flower_id):
     flower_list.pop(flower_id)
     return redirect('/lab2/all_flowers')
 
+
 @lab2.route('/lab2/clear_flowers')
 def clear_flowers():
     flower_list.clear()
     return redirect('/lab2/all_flowers')
+
 
 @lab2.route('/lab2/example')
 def example():
@@ -58,14 +65,17 @@ def example():
     return render_template('example.html', name=name, group=group, course=course, 
                            lab_num=lab_num, fruits=fruits)
 
+
 @lab2.route('/lab2/')
 def lab():
     return render_template('lab2.html')
+
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase=phrase)
+
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
 def calc(a, b):
@@ -86,13 +96,16 @@ def calc(a, b):
 </html>
 '''
 
+
 @lab2.route('/lab2/calc/')
 def calc_default():
     return redirect('/lab2/calc/1/1')
 
+
 @lab2.route('/lab2/calc/<int:a>')
 def calc_single(a):
     return redirect(f'/lab2/calc/{a}/1')
+
 
 books = [
     {'author': 'Фёдор Достоевский', 'title': 'Преступление и наказание', 'genre': 'Роман', 'pages': 671},
@@ -109,9 +122,11 @@ books = [
     {'author': 'Николай Лесков', 'title': 'Левша', 'genre': 'Повесть', 'pages': 96}
 ]
 
+
 @lab2.route('/lab2/books')
 def books_list():
     return render_template('books.html', books=books)
+
 
 cats = [
     {
@@ -225,6 +240,7 @@ cats = [
         'description': 'Кошка с коротким хвостом-помпоном. Активная и разговорчивая порода.'
     }
 ]
+
 
 @lab2.route('/lab2/cats')
 def cats_list():
