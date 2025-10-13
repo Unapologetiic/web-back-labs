@@ -71,3 +71,107 @@ footer{
     display: block;
     font-weight: 500;
 }
+
+/* Стили для страницы заказа */
+.drink-option {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.drink-price {
+    color: #059669;
+    font-weight: bold;
+}
+
+.addon-option {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.addon-price {
+    color: #dc2626;
+    font-size: 0.875rem;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+/* Стили для кнопок */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.btn-secondary {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 10px 15px;
+    border: 1px solid #6c757d;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Стили для форм */
+.form-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-input-small {
+    width: 60px;
+}
+
+.form-input-medium {
+    width: 200px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Общие стили */
+.price-highlight {
+    font-size: 1.2em;
+    margin: 20px 0;
+}
+
+.success-message {
+    font-size: 1.2em;
+    margin: 20px 0;
+    color: #059669;
+}
+
+.link-back {
+    color: #007bff;
+    text-decoration: none;
+}
