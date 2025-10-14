@@ -35,8 +35,8 @@
         <label>Ваш пол:</label>
         <div>
             <select name="sex">
-                <option value="male" {{ sex == 'male' and 'selected'}}>мужчина</option>
-                <option value="female" {{ sex == 'female' and 'selected'}}>женщина</option>
+                <option value="male" {{ 'selected' if sex == 'male' }}>мужчина</option>
+                <option value="female" {{ 'selected' if sex == 'female' }}>женщина</option>
             </select>
         </div>
         <div>
