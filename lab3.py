@@ -2,11 +2,21 @@ from flask import Blueprint, render_template, request, make_response, redirect
 
 lab3 = Blueprint('lab3', __name__)
 
+
 @lab3.route('/lab3/')
 def lab():
     name = request.cookies.get('name')
     name_color = request.cookies.get('name_color')
-    return render_template('lab3/lab3.html', name=name, name_color=name_color)
+    age = request.cookies.get('age')
+    
+    if name:
+        display_name = name
+        display_color = name_color  
+    else:
+        display_name = "Аноним"
+        display_color = "#000000"  
+    
+    return render_template('lab3/lab3.html', name=display_name, name_color=display_color, age=age)
 
 
 @lab3.route('/lab3/cookie')
@@ -99,3 +109,46 @@ def settings():
                          bg_color=bg_color_from_cookie,
                          font_size=font_size_from_cookie,
                          font_family=font_family_from_cookie)
+
+@lab3.route('/lab3/ticket')
+def ticket():
+    return render_template('lab3/ticket_form.html')
+
+@lab3.route('/lab3/ticket_result')
+def ticket_result():
+    # Получаем данные из формы
+    fio = request.args.get('fio')
+    shelf = request.args.get('shelf')
+    linen = request.args.get('linen') == 'on'
+    luggage = request.args.get('luggage') == 'on'
+    age = int(request.args.get('age'))
+    departure = request.args.get('departure')
+    destination = request.args.get('destination')
+    date = request.args.get('date')
+    insurance = request.args.get('insurance') == 'on'
+
+    if age < 1 or age > 120:
+        return "Возраст должен быть от 1 до 120 лет", 400
+
+    
+    if age < 18:
+        price = 700  
+    else:
+        price = 1000  
+
+    if shelf in ['lower', 'lower-side']:
+        price += 100  
+    
+    if linen:
+        price += 75  
+    
+    if luggage:
+        price += 250  
+    
+    if insurance:
+        price += 150  
+
+    return render_template('lab3/ticket_result.html', 
+                         fio=fio, shelf=shelf, linen=linen, luggage=luggage,
+                         age=age, departure=departure, destination=destination,
+                         date=date, insurance=insurance, price=price)
