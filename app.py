@@ -126,6 +126,7 @@ def page_not_found(err):
 </html>
 ''', 404
 
+
 @app.errorhandler(500)
 def internal_server_error(err):
     return '''
@@ -135,7 +136,7 @@ def internal_server_error(err):
         <title>Ошибка 500</title>
     </head>
     <body>
-        <h1>Внутренняя ошибка сервера (500)</h1>
+        <h1>500 - Внутренняя ошибка сервера</h1>
         <p>Что-то пошло не так. Попробуйте позже.</p>
         <a href="/">На главную</a>
     </body>

@@ -79,7 +79,7 @@ def web():
         <html>
            <body>
                <h1>web-сервер на flask</h1>
-               <a href = "/author">author</a>
+               <a href = "/lab1/author">author</a>
            </body>
         </html>""", 200, {
             'X-Server': 'sample',
@@ -99,15 +99,15 @@ def author():
                     <p>Студент: """+ name +"""</p>
                     <p>Группа: """+ group +"""</p>
                     <p>Факультет: """+ faculty +"""</p>
-                    <a href = "/web">web</a>
+                    <a href = "/lab1/web">web</a>
                 </body>
             </html>"""
 
 
 @lab1.route("/lab1/image")
 def image():
-    path = url_for("static", filename="oak.jpg")
-    css_path = url_for("static", filename="lab1.css")
+    css_path = url_for('static', filename='lab1/lab1.css')
+    image_path = url_for('static', filename='lab1/oak.jpg')
     return '''
 <!doctype html>
 <html>
@@ -116,7 +116,7 @@ def image():
     </head>
     <body>
         <h1>Дуб</h1>
-        <img src="''' + path + '''">
+        <img src="''' + image_path + '''">
     </body>
 </html>
 ''',200, {
@@ -136,7 +136,7 @@ def counter():
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr
-    reset_url = url_for("reset_counter")
+    reset_url = url_for("lab1.reset_counter")
     return '''
 <!doctype html>
 <html>
@@ -187,7 +187,6 @@ def created():
 
 @lab1.route("/cause500")
 def cause500():
-    return 1 / 0  
-
+    return 1 / 0
 
 

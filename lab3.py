@@ -50,20 +50,19 @@ def order():
 def pay():
     price = 0
     drink = request.args.get('drink')
-    if drink == 'cofee':
+    if drink == 'coffee':
         price = 120
     elif drink == 'black-tea':
         price = 80
     else:
-        price = 70
+        price = 85
 
     if request.args.get('milk') == 'on':
         price += 30
     if request.args.get('sugar') == 'on':
-        price += 10
+        price += 30
     
     return render_template('lab3/pay.html', price=price)
-
 
 @lab3.route('/lab3/success')
 def success():
@@ -76,8 +75,9 @@ def settings():
     color = request.args.get('color')   
     bg_color = request.args.get('bg_color')
     font_size = request.args.get('font_size')
+    font_family = request.args.get('font_family')
     
-    if color or bg_color or font_size:
+    if color or bg_color or font_size or font_family:
         resp = make_response(redirect('/lab3/settings'))
         if color:
             resp.set_cookie('color', color)
@@ -85,13 +85,17 @@ def settings():
             resp.set_cookie('bg_color', bg_color)
         if font_size:
             resp.set_cookie('font_size', font_size)
+        if font_family:
+            resp.set_cookie('font_family', font_family)
         return resp
     
     color_from_cookie = request.cookies.get('color', '#000000')
     bg_color_from_cookie = request.cookies.get('bg_color', '#ffffff')
     font_size_from_cookie = request.cookies.get('font_size', '16px')
+    font_family_from_cookie = request.cookies.get('font_family', 'Arial')
     
     return render_template('lab3/settings.html', 
                          color=color_from_cookie,
                          bg_color=bg_color_from_cookie,
-                         font_size=font_size_from_cookie)
+                         font_size=font_size_from_cookie,
+                         font_family=font_family_from_cookie)

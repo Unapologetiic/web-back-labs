@@ -23,7 +23,7 @@ flower_list = [
 
 @lab2.route('/lab2/all_flowers')
 def all_flowers():
-    return render_template('all_flowers.html', flowers=flower_list)
+    return render_template('lab2/all_flowers.html', flowers=flower_list)
 
 
 @lab2.route('/lab2/add_flower/')
@@ -31,7 +31,7 @@ def add_flower():
     name = request.args.get('name')
     if not name:
         return "вы не задали имя цветка", 400
-    flower_list.lab2end({'name': name, 'price': 300})
+    flower_list.append({'name': name, 'price': 300})
     return redirect('/lab2/all_flowers')
 
 
@@ -62,19 +62,19 @@ def example():
         {'name': 'мандарины', 'price':90},
         {'name': 'манго', 'price':321}
     ]
-    return render_template('example.html', name=name, group=group, course=course, 
+    return render_template('lab2/example.html', name=name, group=group, course=course, 
                            lab_num=lab_num, fruits=fruits)
 
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase=phrase)
+    return render_template('lab2/filter.html', phrase=phrase)
 
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
@@ -125,7 +125,7 @@ books = [
 
 @lab2.route('/lab2/books')
 def books_list():
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 
 cats = [
@@ -244,4 +244,4 @@ cats = [
 
 @lab2.route('/lab2/cats')
 def cats_list():
-    return render_template('cats.html', cats=cats)
+    return render_template('lab2/cats.html', cats=cats)
