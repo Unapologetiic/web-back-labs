@@ -112,10 +112,10 @@ def settings():
 
 @lab3.route('/lab3/ticket')
 def ticket():
-    return render_template('lab3/ticket_form.html')
+    return render_template('lab3/ticket.html')
 
-@lab3.route('/lab3/ticket_result')
-def ticket_result():
+@lab3.route('/lab3/ticket2')
+def ticket2():
     # Получаем данные из формы
     fio = request.args.get('fio')
     shelf = request.args.get('shelf')
@@ -148,7 +148,7 @@ def ticket_result():
     if insurance:
         price += 150  
 
-    return render_template('lab3/ticket_result.html', 
+    return render_template('lab3/ticket2.html', 
                          fio=fio, shelf=shelf, linen=linen, luggage=luggage,
                          age=age, departure=departure, destination=destination,
                          date=date, insurance=insurance, price=price)
