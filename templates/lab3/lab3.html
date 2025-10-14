@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
-
 {% block lab %}Лабораторная работа 3{% endblock %}
-
 
 {% block main %}
     <h1>Формы, cookie</h1>
     <div>
         Привет, <span style="color: {{name_color}}">{{name}}</span>
+        {% if age %}
+            <span> ({{ age }} лет)</span>
+        {% endif %}
     </div>
     <div>Список сделанных страниц:</div>
     <ol>
@@ -22,6 +23,9 @@
         </li>
         <li>
             <a href = "/lab3/order">Заказ напитка</a>
+        </li>
+         <li>
+            <a href = "/lab3/ticket">Железнодорожный билет</a>
         </li>
         <li>
             <a href = "/lab3/settings">Настройки</a>

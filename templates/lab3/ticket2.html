@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <div style="border: 2px solid #333; padding: 20px; max-width: 600px; margin: 0 auto; background: white;">
+        <h1 style="text-align: center; color: #d40000;">Железнодорожный билет</h1>
+        
+        <div style="margin: 15px 0;">
+            <strong>Пассажир:</strong> {{ fio }}
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Тип билета:</strong> 
+            {% if age < 18 %}
+                <span style="color: #d40000;">Детский билет</span>
+            {% else %}
+                Взрослый билет
+            {% endif %}
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Возраст:</strong> {{ age }} лет
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Маршрут:</strong> {{ departure }} → {{ destination }}
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Дата поездки:</strong> {{ date }}
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Место:</strong> 
+            {% if shelf == 'lower' %}Нижняя полка
+            {% elif shelf == 'upper' %}Верхняя полка
+            {% elif shelf == 'upper-side' %}Верхняя боковая
+            {% elif shelf == 'lower-side' %}Нижняя боковая
+            {% endif %}
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <strong>Дополнительные услуги:</strong>
+            <ul>
+                {% if linen %}<li>Бельё</li>{% endif %}
+                {% if luggage %}<li>Багаж</li>{% endif %}
+                {% if insurance %}<li>Страховка</li>{% endif %}
+            </ul>
+        </div>
+        
+        <hr>
+        
+        <div style="text-align: center; font-size: 1.5em; font-weight: bold; color: #d40000;">
+            Итого к оплате: {{ price }} руб.
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/lab3/ticket" class="btn-primary">Оформить новый билет</a>
+            <a href="/lab3/" class="btn-secondary">На главную</a>
+        </div>
+    </div>
+{% endblock %}
