@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Поиск смартфонов</h1>
+
+    <div class="search-form">
+        <form method="get">
+            <div class="form-row">
+                <div class="form-field">
+                    <label class="form-label">Минимальная цена:</label>
+                    <input type="number" name="min_price" placeholder="{{ min_price_all }}" 
+                           value="{{ min_price or '' }}" class="form-input form-input-medium">
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label">Максимальная цена:</label>
+                    <input type="number" name="max_price" placeholder="{{ max_price_all }}" 
+                           value="{{ max_price or '' }}" class="form-input form-input-medium">
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">Искать</button>
+                    <a href="/lab3/products_reset" class="btn-secondary">Сброс</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <h2>Результаты поиска ({{ products|length }} товаров)</h2>
+
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <h3>{{ product.name }}</h3>
+                <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+                <p><strong>Бренд:</strong> {{ product.brand }}</p>
+                <p><strong>Цвет:</strong> {{ product.color }}</p>
+                <p><strong>Память:</strong> {{ product.storage }} ГБ</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <p style="font-size: 1.2em; margin-bottom: 10px;">Не найдено ни одного товара</p>
+            <p>Попробуйте изменить диапазон цен</p>
+        </div>
+    {% endif %}
+{% endblock %}

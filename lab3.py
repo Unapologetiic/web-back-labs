@@ -162,3 +162,72 @@ def clear_settings():
     resp.delete_cookie('font_size')
     resp.delete_cookie('font_family')
     return resp
+
+
+products_list = [
+    {'name': 'iPhone 15 Pro', 'price': 99990, 'brand': 'Apple', 'color': 'Титановый', 'storage': 128},
+    {'name': 'Samsung Galaxy S24', 'price': 79990, 'brand': 'Samsung', 'color': 'Черный', 'storage': 256},
+    {'name': 'Xiaomi 14', 'price': 59990, 'brand': 'Xiaomi', 'color': 'Белый', 'storage': 256},
+    {'name': 'Google Pixel 8', 'price': 69990, 'brand': 'Google', 'color': 'Серый', 'storage': 128},
+    {'name': 'OnePlus 12', 'price': 54990, 'brand': 'OnePlus', 'color': 'Зеленый', 'storage': 256},
+    {'name': 'iPhone 14', 'price': 74990, 'brand': 'Apple', 'color': 'Синий', 'storage': 128},
+    {'name': 'Samsung Galaxy A54', 'price': 29990, 'brand': 'Samsung', 'color': 'Фиолетовый', 'storage': 128},
+    {'name': 'Xiaomi Redmi Note 13', 'price': 19990, 'brand': 'Xiaomi', 'color': 'Черный', 'storage': 64},
+    {'name': 'Realme 11 Pro+', 'price': 24990, 'brand': 'Realme', 'color': 'Золотой', 'storage': 256},
+    {'name': 'Nothing Phone 2', 'price': 44990, 'brand': 'Nothing', 'color': 'Белый', 'storage': 128},
+    {'name': 'iPhone 13', 'price': 59990, 'brand': 'Apple', 'color': 'Розовый', 'storage': 128},
+    {'name': 'Samsung Galaxy Z Flip5', 'price': 89990, 'brand': 'Samsung', 'color': 'Сиреневый', 'storage': 256},
+    {'name': 'Xiaomi Poco X6 Pro', 'price': 27990, 'brand': 'Xiaomi', 'color': 'Желтый', 'storage': 256},
+    {'name': 'Honor Magic6 Lite', 'price': 22990, 'brand': 'Honor', 'color': 'Синий', 'storage': 128},
+    {'name': 'Vivo V29', 'price': 34990, 'brand': 'Vivo', 'color': 'Красный', 'storage': 256},
+    {'name': 'Oppo Reno 10', 'price': 31990, 'brand': 'Oppo', 'color': 'Зеленый', 'storage': 128},
+    {'name': 'iPhone 15', 'price': 84990, 'brand': 'Apple', 'color': 'Черный', 'storage': 128},
+    {'name': 'Samsung Galaxy S23 FE', 'price': 49990, 'brand': 'Samsung', 'color': 'Кремовый', 'storage': 128},
+    {'name': 'Xiaomi 13T', 'price': 44990, 'brand': 'Xiaomi', 'color': 'Черный', 'storage': 256},
+    {'name': 'Google Pixel 7a', 'price': 39990, 'brand': 'Google', 'color': 'Белый', 'storage': 128}
+]
+
+@lab3.route('/lab3/products')
+def products():
+
+    min_price_all = min(product['price'] for product in products_list)
+    max_price_all = max(product['price'] for product in products_list)
+    
+
+    min_price = request.args.get('min_price') or request.cookies.get('products_min_price')
+    max_price = request.args.get('max_price') or request.cookies.get('products_max_price')
+    
+    filtered_products = products_list.copy()
+    
+    if min_price:
+        min_price = int(min_price)
+        filtered_products = [p for p in filtered_products if p['price'] >= min_price]
+    
+    if max_price:
+        max_price = int(max_price)
+        filtered_products = [p for p in filtered_products if p['price'] <= max_price]
+    
+    if min_price and max_price and min_price > max_price:
+        min_price, max_price = max_price, min_price
+        filtered_products = [p for p in products_list if min_price <= p['price'] <= max_price]
+    
+    resp = make_response(render_template('lab3/products.html', 
+                                       products=filtered_products,
+                                       min_price=min_price,
+                                       max_price=max_price,
+                                       min_price_all=min_price_all,
+                                       max_price_all=max_price_all))
+    
+    if min_price:
+        resp.set_cookie('products_min_price', str(min_price))
+    if max_price:
+        resp.set_cookie('products_max_price', str(max_price))
+    
+    return resp
+
+@lab3.route('/lab3/products_reset')
+def products_reset():
+    resp = make_response(redirect('/lab3/products'))
+    resp.delete_cookie('products_min_price')
+    resp.delete_cookie('products_max_price')
+    return resp
