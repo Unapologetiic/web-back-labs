@@ -21,10 +21,6 @@
             {% if request.cookies.get('font_size') %}
             font-size: {{ request.cookies.get('font_size') }};
             {% endif %}
-            
-            {% if request.cookies.get('font_family') %}
-            font-family: {{ request.cookies.get('font_family') }};
-            {% endif %}
         }
     </style>
 </head>
