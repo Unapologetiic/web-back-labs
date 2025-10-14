@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Настройки</h1>
+    
+    <form>
+        <div class="form-group">
+            <label for="color">Цвет текста:</label>
+            <input type="color" id="color" name="color" value="{{ color or '#000000'}}">
+        </div>
+
+        <div class="form-group">
+            <label for="bg_color">Цвет фона:</label>
+            <input type="color" id="bg_color" name="bg_color" value="{{ bg_color or '#ffffff'}}">
+        </div>
+
+        <div class="form-group">
+            <label for="font_size">Размер шрифта:</label>
+            <select id="font_size" name="font_size">
+                <option value="14px" {{ 'selected' if font_size == '14px' }}>Маленький</option>
+                <option value="16px" {{ 'selected' if font_size == '16px' }}>Средний</option>
+                <option value="18px" {{ 'selected' if font_size == '18px' }}>Большой</option>
+                <option value="20px" {{ 'selected' if font_size == '20px' }}>Очень большой</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" class="btn-primary">Применить</button>
+            <a href="/lab3/" class="btn-secondary">Назад</a>
+        </div>
+    </form>
+{% endblock %}
