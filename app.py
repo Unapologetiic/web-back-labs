@@ -26,6 +26,7 @@ def start():
             <li><a href="/lab1">Первая лабораторная</a></li>
             <li><a href="/lab2">Вторая лабораторная</a></li>
             <li><a href="/lab3">Третья лабораторная</a></li>
+            <li><a href="/lab4">Четвертая лабораторная</a><li>
         </ul>
         <hr>
         <footer>
