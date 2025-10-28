@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block lab %}Холодильник{% endblock %}
+
+{% block main %}
+    <h1>Результат установки температуры</h1>
+    
+    {% if error %}
+        <div style="color: red; font-weight: bold; background-color: #ffe6e6; padding: 10px; border: 1px solid red; border-radius: 5px; margin: 10px 0;">
+            {{ error }}
+        </div>
+    {% else %}
+        <div style="color: green; font-weight: bold; background-color: #e6ffe6; padding: 10px; border: 1px solid green; border-radius: 5px; margin: 10px 0;">
+            Установлена температура: {{ temperature }}°C
+        </div>
+        
+        <div style="font-size: 24px; color: blue; margin: 20px 0;">
+            {% for i in range(snowflakes) %}
+                *
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div>
+        <a href="/lab4/fridge-form">Установить другую температуру</a>
+    </div>
+    
+    <div>
+        <a href="/lab4">Вернуться к лабораторной работе 4</a>
+    </div>
+{% endblock %}

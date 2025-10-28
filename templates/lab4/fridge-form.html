@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block lab %}Холодильник{% endblock %}
+
+{% block main %}
+    <h1>Установка температуры холодильника</h1>
+    
+    <form method="post" action="/lab4/fridge">
+        <div>
+            <label for="temperature">Температура (°C):</label>
+            <input type="number" id="temperature" name="temperature" min="-50" max="10" required>
+        </div>
+        <div>
+            <button type="submit">Установить температуру</button>
+            <button type="reset">Сбросить</button>
+        </div>
+    </form>
+    
+    <div>
+        <a href="/lab4">Вернуться к лабораторной работе 4</a>
+    </div>
+{% endblock %}
