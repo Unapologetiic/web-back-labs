@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block lab %}Редактирование профиля{% endblock %}
+
+{% block main %}
+    <h1>Редактирование профиля</h1>
+    
+    <form method="post">
+        <div>
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" value="{{ user.login }}" required>
+        </div>
+        
+        <div>
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+        </div>
+        
+        <div>
+            <label for="password">Новый пароль (оставьте пустым, если не хотите менять):</label>
+            <input type="password" id="password" name="password">
+        </div>
+        
+        <div>
+            <label for="password_confirm">Подтверждение нового пароля:</label>
+            <input type="password" id="password_confirm" name="password_confirm">
+        </div>
+        
+        <div>
+            <label for="gender">Пол:</label>
+            <select id="gender" name="gender">
+                <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Мужской</option>
+                <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Женский</option>
+            </select>
+        </div>
+        
+        {% if error %}
+            <div style="color: red; font-weight: bold; background-color: #ffe6e6; padding: 10px; border: 1px solid red; border-radius: 5px; margin: 10px 0;">
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <div>
+            <button type="submit">Сохранить изменения</button>
+            <button type="reset">Сбросить</button>
+            <a href="/lab4/users">
+                <button type="button">Отмена</button>
+            </a>
+        </div>
+    </form>
+    
+    <div>
+        <a href="/lab4/users">Вернуться к списку пользователей</a>
+    </div>
+{% endblock %}

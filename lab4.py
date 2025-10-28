@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response, redirect, session
+from flask import Blueprint, render_template, request, make_response, redirect, session, flash
 
 lab4 = Blueprint('lab4', __name__)
 
@@ -183,6 +183,126 @@ def login():
 def logout():
     session.pop('login', None)
     return redirect('/lab4/login')
+
+
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('lab4/register.html')
+    
+    login = request.form.get('login')
+    password = request.form.get('password')
+    password_confirm = request.form.get('password_confirm')
+    name = request.form.get('name')
+    gender = request.form.get('gender')
+    
+    
+    if not login or not password or not password_confirm or not name:
+        return render_template('lab4/register.html', error='Все поля должны быть заполнены', 
+                             login=login, name=name)
+    
+    
+    if password != password_confirm:
+        return render_template('lab4/register.html', error='Пароли не совпадают', 
+                             login=login, name=name)
+    
+    
+    for user in users:
+        if user['login'] == login:
+            return render_template('lab4/register.html', error='Пользователь с таким логином уже существует', 
+                                 login=login, name=name)
+    
+    
+    new_user = {
+        'login': login,
+        'password': password,
+        'name': name,
+        'gender': gender
+    }
+    users.append(new_user)
+    
+    
+    session['login'] = login
+    return redirect('/lab4/login')
+
+@lab4.route('/lab4/users')
+def users_list():
+    
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    return render_template('lab4/users.html', users=users, current_user=session['login'])
+
+@lab4.route('/lab4/delete-user', methods=['POST'])
+def delete_user():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    current_login = session['login']
+    
+    
+    global users
+    users = [user for user in users if user['login'] != current_login]
+    
+    
+    session.pop('login', None)
+    return redirect('/lab4/login')
+
+@lab4.route('/lab4/edit-user', methods=['GET', 'POST'])
+def edit_user():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    current_login = session['login']
+    current_user = None
+    
+    
+    for user in users:
+        if user['login'] == current_login:
+            current_user = user
+            break
+    
+    if request.method == 'GET':
+        return render_template('lab4/edit-user.html', user=current_user)
+    
+    
+    new_login = request.form.get('login')
+    new_name = request.form.get('name')
+    new_password = request.form.get('password')
+    password_confirm = request.form.get('password_confirm')
+    gender = request.form.get('gender')
+    
+    
+    if not new_login or not new_name:
+        return render_template('lab4/edit-user.html', user=current_user, 
+                             error='Логин и имя обязательны для заполнения')
+    
+    
+    if new_login != current_login:
+        for user in users:
+            if user['login'] == new_login:
+                return render_template('lab4/edit-user.html', user=current_user, 
+                                     error='Пользователь с таким логином уже существует')
+    
+    
+    if new_password:
+        if new_password != password_confirm:
+            return render_template('lab4/edit-user.html', user=current_user, 
+                                 error='Пароли не совпадают')
+        
+        current_user['password'] = new_password
+    
+    
+    
+    current_user['login'] = new_login
+    current_user['name'] = new_name
+    current_user['gender'] = gender
+    
+    
+    if new_login != current_login:
+        session['login'] = new_login
+    
+    return redirect('/lab4/users')
 
 @lab4.route('/lab4/fridge-form')
 def fridge_form():
