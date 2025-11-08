@@ -344,10 +344,10 @@ def grain():
     weight = request.form.get('weight')
     
     prices = {
-        'barley': 12000,  # ячмень
-        'oats': 8500,     # овёс
-        'wheat': 9000,    # пшеница
-        'rye': 15000      # рожь
+        'barley': 12000,  
+        'oats': 8500,     
+        'wheat': 9000,    
+        'rye': 15000      
     }
     
     grain_names = {
