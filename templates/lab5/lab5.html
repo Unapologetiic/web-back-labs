@@ -4,7 +4,13 @@
 
 {% block main %}
     <div class="user-info">
-        <h2>Текущий пользователь: <span style="color: #ea66d6; font-weight: bold;">{{ username }}</span></h2>
+        <h2>Текущий пользователь: <span style="color: #ea66d6; font-weight: bold;">
+            {% if login %}
+                {{ login }}
+            {% else %}
+                Anonymous
+            {% endif %}
+        </span></h2>
     </div>
 
     <h1>База знаний</h1>
