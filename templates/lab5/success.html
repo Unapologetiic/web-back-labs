@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <div class="success-container">
+        <h1>Поздравляем с успешной регистрацией!</h1>
+        
+        <div class="success-message">
+            <p>Пользователь <strong>{{ login }}</strong> успешно зарегистрирован в системе!</p>
+            <p>Теперь вы можете войти в систему и начать пользоваться базой знаний.</p>
+        </div>
+
+        <div class="action-links">
+            <a href="/lab5/login" class="btn btn-primary">Войти в систему</a>
+            <a href="/lab5" class="btn btn-secondary">На главную базы знаний</a>
+        </div>
+    </div>
+
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .success-message p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
