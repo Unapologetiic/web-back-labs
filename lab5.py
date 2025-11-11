@@ -46,10 +46,13 @@ def login():
     
     conn, cur = db_connect()
 
-    if current_app.config['DB_TYPE'] == 'postgres':
+    db_type = current_app.config['DB_TYPE']
+
+    if db_type == 'postgres':
         cur.execute("SELECT * FROM users WHERE login=%s;", (login,))
     else:
         cur.execute("SELECT * FROM users WHERE login=?;", (login,))
+    
     user = cur.fetchone()
 
     if not user:
@@ -81,7 +84,9 @@ def register():
     
     conn, cur = db_connect()
 
-    if current_app.config['DB_TYPE'] == 'postgres':
+    db_type = current_app.config['DB_TYPE']
+    
+    if db_type == 'postgres':
         cur.execute("SELECT login FROM users WHERE login=%s;", (login,))
     else:
         cur.execute("SELECT login FROM users WHERE login=?;", (login,))
@@ -94,7 +99,7 @@ def register():
     
     
     password_hash = generate_password_hash(password)
-    if current_app.config['DB_TYPE'] == 'postgres':
+    if db_type == 'postgres':
         cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);", (login, password_hash))
     else:
         cur.execute("INSERT INTO users (login, password) VALUES (?, ?);", (login, password_hash))
@@ -116,14 +121,16 @@ def create():
     article_text = request.form.get('article_text')
 
     conn, cur = db_connect()
-    if current_app.config['DB_TYPE'] == 'postgres':
+    db_type = current_app.config['DB_TYPE']
+    
+    if db_type == 'postgres':
         cur.execute("SELECT * FROM users WHERE login=%s;", (login,))
     else:
         cur.execute("SELECT * FROM users WHERE login=?;", (login,))
 
     login_id = cur.fetchone()["id"]
 
-    if current_app.config['DB_TYPE'] == 'postgres':
+    if db_type == 'postgres':
         cur.execute("INSERT INTO articles (login_id, title, article_text) VALUES (%s, %s, %s);", 
                 (login_id, title, article_text))
     else:
@@ -142,13 +149,16 @@ def list():
     
     conn, cur = db_connect()
 
-    if current_app.config['DB_TYPE'] == 'postgres':
+    db_type = current_app.config['DB_TYPE']
+    
+    if db_type == 'postgres':
         cur.execute("SELECT id FROM users WHERE login=%s;", (login,))
     else:
         cur.execute("SELECT id FROM users WHERE login=?;", (login,))
+
     login_id = cur.fetchone()["id"]
 
-    if current_app.config['DB_TYPE'] == 'postgres':
+    if db_type == 'postgres':
         cur.execute("SELECT * FROM articles WHERE login_id=%s;", (login_id,))
     else:
         cur.execute("SELECT * FROM articles WHERE login_id=?;", (login_id,))
