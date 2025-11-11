@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        body {
+            background: #fff5f7;
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+        }
+        form {
+            background: pink;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #f48fb1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            color: #ad1457;
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px 0;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #f48fb1;
+            border-radius: 5px;
+        }
+        textarea {
+            height: 150px;
+        }
+        button {
+            background: #e91e63;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+
+    <h1>Редактирование статьи</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>Название статьи:</label>
+            <input type="text" maxlength="50" name="title" value="{{ article['title'] }}">
+        </div>
+
+        <div>
+            <label>Текст статьи:</label>
+            <textarea name="article_text">{{ article['article_text'] }}</textarea>
+        </div>
+
+        <div>
+            <button type="submit">Сохранить изменения</button>
+        </div>
+    </form>
+
+    <a href="/lab5/list" style="display: block; text-align: center; margin-top: 20px; color: #e91e63;">← Назад к списку статей</a>
+{% endblock %}

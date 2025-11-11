@@ -35,16 +35,52 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .no-articles {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 40px 0;
+        }
+        .article-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+        .btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .btn-edit {
+            background: #ffc107;
+            color: black;
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
     </style>
 
     <h1>Мои статьи</h1>
 
-    {% for article in articles %}
-        <div class="article">
-            <h2>{{ article['title'] }}</h2>
-            <div class="article-text">{{ article['article_text'] }}</div>
+    {% if articles %}
+        {% for article in articles %}
+            <div class="article">
+                <h2>{{ article['title'] }}</h2>
+                <div class="article-text">{{ article['article_text'] }}</div>
+                <div class="article-actions">
+                    <a href="/lab5/edit/{{ article['id'] }}" class="btn btn-edit">✏️ Редактировать</a>
+                    <a href="/lab5/delete/{{ article['id'] }}" class="btn btn-delete" 
+                       onclick="return confirm('Вы уверены, что хотите удалить эту статью?')">🗑️ Удалить</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-articles">
+            <p>У вас пока нет статей. <a href="/lab5/create">Создайте первую статью!</a></p>
         </div>
-    {% endfor %}
+    {% endif %}
 
     <a href="/lab5" class="back-link">← Назад</a>
 {% endblock %}
