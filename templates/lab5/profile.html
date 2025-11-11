@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        body {
+            background: #fff5f7;
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+        }
+        form {
+            background: pink;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #f48fb1;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label {
+            color: #ad1457;
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px 0;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #f48fb1;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #e91e63;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #e91e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+
+    <h1>Редактирование профиля</h1>
+
+    {% if errors %}
+        <div class="error">
+            {% for error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>Реальное имя:</label>
+            <input type="text" name="real_name" value="{{ user['real_name'] if user['real_name'] }}">
+        </div>
+
+        <div>
+            <label>Текущий пароль (только для смены пароля):</label>
+            <input type="password" name="current_password" placeholder="Введите текущий пароль">
+        </div>
+
+        <div>
+            <label>Новый пароль:</label>
+            <input type="password" name="new_password" placeholder="Введите новый пароль">
+        </div>
+
+        <div>
+            <label>Подтверждение пароля:</label>
+            <input type="password" name="confirm_password" placeholder="Повторите новый пароль">
+        </div>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <a href="/lab5" class="back-link">← Назад</a>
+{% endblock %}

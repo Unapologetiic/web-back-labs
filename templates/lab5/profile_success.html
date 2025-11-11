@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <div class="success-container">
+        <h1>Профиль обновлен!</h1>
+        
+        <div class="success-message">
+            <p>Ваши данные были успешно сохранены.</p>
+        </div>
+
+        <div class="action-links">
+            <a href="/lab5" class="btn btn-primary">На главную</a>
+            <a href="/lab5/profile" class="btn btn-secondary">Продолжить редактирование</a>
+        </div>
+    </div>
+
+    <style>
+        .success-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .success-message {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+{% endblock %}

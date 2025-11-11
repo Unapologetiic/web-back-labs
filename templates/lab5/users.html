@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        body {
+            background: #fff5f7;
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+        }
+        .users-list {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .user-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .user-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .user-login {
+            color: #666;
+            font-style: italic;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #e91e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+
+    <h1>Зарегистрированные пользователи</h1>
+
+    <div class="users-list">
+        {% for user in users %}
+            <div class="user-item">
+                <span class="user-name">
+                    {% if user['real_name'] %}
+                        {{ user['real_name'] }}
+                    {% else %}
+                        Не указано
+                    {% endif %}
+                </span>
+                <span class="user-login">@{{ user['login'] }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <a href="/lab5" class="back-link">← Назад</a>
+{% endblock %}

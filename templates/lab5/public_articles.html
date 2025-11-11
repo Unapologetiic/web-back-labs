@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        body {
+            background: #fff5f7;
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+        }
+        .article {
+            background: pink;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px solid #f48fb1;
+        }
+        .article h2 {
+            color: #ad1457;
+            margin-top: 0;
+        }
+        .article-text {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .article-author {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+            text-align: right;
+        }
+        .favorite-badge {
+            background: gold;
+            color: black;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #e91e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .no-articles {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 40px 0;
+        }
+    </style>
+
+    <h1>Публичные статьи</h1>
+
+    {% if articles %}
+        {% for article in articles %}
+            <div class="article">
+                <h2>
+                    {{ article['title'] }}
+                    {% if article['is_favorite'] %}
+                        <span class="favorite-badge">⭐ Избранная</span>
+                    {% endif %}
+                </h2>
+                <div class="article-text">{{ article['article_text'] }}</div>
+                <div class="article-author">
+                    Автор: 
+                    {% if article['real_name'] %}
+                        {{ article['real_name'] }} (@{{ article['login'] }})
+                    {% else %}
+                        @{{ article['login'] }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-articles">
+            <p>Пока нет публичных статей.</p>
+        </div>
+    {% endif %}
+
+    <a href="/lab5" class="back-link">← Назад</a>
+{% endblock %}

@@ -68,7 +68,19 @@
             <label>Текст статьи:</label>
             <textarea name="article_text">{{ article_text if article_text }}</textarea>
         </div>
+        <div>
+            <label style="display: flex; align-items: center; margin: 10px 0;">
+                <input type="checkbox" name="is_favorite" style="width: auto; margin-right: 10px;">
+                Добавить в избранное
+            </label>
+        </div>
 
+        <div>
+            <label style="display: flex; align-items: center; margin: 10px 0;">
+            <input type="checkbox" name="is_public" style="width: auto; margin-right: 10px;">
+            Сделать публичной
+            </label>
+        </div>
         <div>
             <button type="submit">Создать</button>
         </div>
