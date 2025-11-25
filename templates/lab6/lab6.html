@@ -22,15 +22,26 @@ function getOfficeList(){
     .then(function(data){
         const office_list = data.result;
         const ul = document.getElementById('office-list');
+        ul.innerHTML = ''; // Очищаем список перед обновлением
+        
         for(let i=0; i < office_list.length; i++) {
             const office = office_list[i];
             const li = document.createElement('li');
             li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
 
-            const bookingButton = document.createElement('button');
-            bookingButton.innerText = 'зарезервировать';
-            bookingButton.onclick = function() {booking(office.number)};
-            li.appendChild(bookingButton);
+            // Кнопка для резервирования (только для свободных офисов)
+            if (!office.tenant) {
+                const bookingButton = document.createElement('button');
+                bookingButton.innerText = 'зарезервировать';
+                bookingButton.onclick = function() { booking(office.number) };
+                li.appendChild(bookingButton);
+            } else {
+                // Кнопка для освобождения (только для занятых офисов)
+                const cancellationButton = document.createElement('button');
+                cancellationButton.innerText = 'освободить';
+                cancellationButton.onclick = function() { cancellation(office.number) };
+                li.appendChild(cancellationButton);
+            }
 
             ul.appendChild(li);
         }
@@ -62,19 +73,70 @@ function booking(officeNumber) {
                 case 2:
                     alert('Офис уже арендуется');
                     break;
-                case -32601:
-                    alert('Странная ошибка');
+                default:
+                    alert('Ошибка: ' + (data.error.message || 'Неизвестная ошибка'));
                     break;
             }
-                
         }
         else {
-            document.getElementById('office-list').innerHTML='';
+            document.getElementById('office-list').innerHTML = '';
             getOfficeList();
         }
-        
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Ошибка сети');
     });
 }
+
+function cancellation(officeNumber) {
+    const url = '/lab6/json-rpc-api/';
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'cancellation',
+        'params': officeNumber,
+        'id': Math.round(Math.random()*1000)
+    };
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(json)
+    })
+    .then(function(response){
+        return response.json()
+    })
+    .then(function(data){
+        console.log('Cancellation response:', data); // Для отладки
+        if(data.error) {
+            switch(data.error.code) {
+                case 1:
+                    alert('Вы не авторизованы, пожалуйста, авторизуйтесь');
+                    break;
+                case 3:
+                    alert('Офис не арендован');
+                    break;
+                case 4:
+                    alert('Офис арендован другим пользователем');
+                    break;
+                case 5:
+                    alert('Офис не найден');
+                    break;
+                default:
+                    alert('Ошибка: ' + (data.error.message || 'Неизвестная ошибка') + ' (код: ' + data.error.code + ')');
+                    break;
+            }
+        }
+        else {
+            document.getElementById('office-list').innerHTML = '';
+            getOfficeList();
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Ошибка сети');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function(){
     getOfficeList();
 });
@@ -83,5 +145,5 @@ document.addEventListener('DOMContentLoaded', function(){
 
 {% block main %}
     <h1>Список кабинетов</h1>
-    <ul id = "office-list"></ul>
+    <ul id="office-list"></ul>
 {% endblock %}
