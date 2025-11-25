@@ -2,6 +2,58 @@
 
 {% block lab %}Лабораторная работа 6{% endblock %}
 
+{% block style %}
+<style>
+.office-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.office-container h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#office-list {
+    list-style: none;
+    padding: 0;
+}
+
+#office-list li {
+    background: #f8f9fa;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ef84bf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#office-list button {
+    background: #ef84bf;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#office-list button:hover {
+    background: #ef84bf;
+}
+
+#total-cost {
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+</style>
+{% endblock %}
+
 {% block script %}
 <script>
 function getOfficeList(){
@@ -166,9 +218,11 @@ document.addEventListener('DOMContentLoaded', function(){
 {% endblock %}
 
 {% block main %}
+<div class="office-container">
     <h1>Список кабинетов</h1>
     <ul id="office-list"></ul>
     <div id="total-cost">
-        <!-- Здесь будет отображаться общая стоимость аренды -->
+        
     </div>
+</div>
 {% endblock %}
