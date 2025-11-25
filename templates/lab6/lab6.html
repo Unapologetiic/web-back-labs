@@ -24,10 +24,15 @@ function getOfficeList(){
         const ul = document.getElementById('office-list');
         ul.innerHTML = ''; // Очищаем список перед обновлением
         
+        let totalCost = 0;
+        let userBookedOffices = [];
+        
         for(let i=0; i < office_list.length; i++) {
             const office = office_list[i];
             const li = document.createElement('li');
-            li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
+            
+            // Отображаем номер офиса, статус и стоимость
+            li.innerHTML = `<strong>Офис ${office.number}</strong>: ${office.tenant || 'свободен'} - ${office.price} руб./мес.`;
 
             // Кнопка для резервирования (только для свободных офисов)
             if (!office.tenant) {
@@ -41,9 +46,26 @@ function getOfficeList(){
                 cancellationButton.innerText = 'освободить';
                 cancellationButton.onclick = function() { cancellation(office.number) };
                 li.appendChild(cancellationButton);
+                
+                // Считаем общую стоимость для арендованных текущим пользователем офисов
+
+                totalCost += office.price;
+                userBookedOffices.push(office.number);
             }
 
             ul.appendChild(li);
+        }
+        
+        // Обновляем блок с общей стоимостью
+        const totalCostElement = document.getElementById('total-cost');
+        if (userBookedOffices.length > 0) {
+            totalCostElement.innerHTML = `
+                <h3>Ваши арендованные офисы</h3>
+                <p>Офисы: ${userBookedOffices.join(', ')}</p>
+                <p><strong>Общая стоимость аренды: ${totalCost} руб./мес.</strong></p>
+            `;
+        } else {
+            totalCostElement.innerHTML = '<p>У вас нет арендованных офисов</p>';
         }
     });
 }
@@ -146,4 +168,7 @@ document.addEventListener('DOMContentLoaded', function(){
 {% block main %}
     <h1>Список кабинетов</h1>
     <ul id="office-list"></ul>
+    <div id="total-cost">
+        <!-- Здесь будет отображаться общая стоимость аренды -->
+    </div>
 {% endblock %}
