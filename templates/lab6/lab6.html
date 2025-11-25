@@ -42,7 +42,7 @@
 }
 
 #office-list button:hover {
-    background: #ef84bf;
+    background: #ffd5eb;
 }
 
 #total-cost {
@@ -50,6 +50,13 @@
     padding: 20px;
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.user-info {
+    background: #e9ecef;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 </style>
 {% endblock %}
@@ -93,16 +100,21 @@ function getOfficeList(){
                 bookingButton.onclick = function() { booking(office.number) };
                 li.appendChild(bookingButton);
             } else {
-                // Кнопка для освобождения (только для занятых офисов)
-                const cancellationButton = document.createElement('button');
-                cancellationButton.innerText = 'освободить';
-                cancellationButton.onclick = function() { cancellation(office.number) };
-                li.appendChild(cancellationButton);
-                
-                // Считаем общую стоимость для арендованных текущим пользователем офисов
-
-                totalCost += office.price;
-                userBookedOffices.push(office.number);
+                // Кнопка для освобождения (только если офис арендован текущим пользователем)
+                const currentUser = '{{ session.get("login", "") }}';
+                if (office.tenant === currentUser) {
+                    const cancellationButton = document.createElement('button');
+                    cancellationButton.innerText = 'освободить';
+                    cancellationButton.onclick = function() { cancellation(office.number) };
+                    li.appendChild(cancellationButton);
+                    
+                    // Считаем общую стоимость только для офисов текущего пользователя
+                    totalCost += office.price;
+                    userBookedOffices.push(office.number);
+                } else {
+                    // Если офис арендован другим пользователем, показываем кто арендовал
+                    li.innerHTML += ` <span style="color: #666;">(арендован: ${office.tenant})</span>`;
+                }
             }
 
             ul.appendChild(li);
@@ -110,14 +122,18 @@ function getOfficeList(){
         
         // Обновляем блок с общей стоимостью
         const totalCostElement = document.getElementById('total-cost');
+        const currentUser = '{{ session.get("login", "") }}';
+        
         if (userBookedOffices.length > 0) {
             totalCostElement.innerHTML = `
                 <h3>Ваши арендованные офисы</h3>
                 <p>Офисы: ${userBookedOffices.join(', ')}</p>
                 <p><strong>Общая стоимость аренды: ${totalCost} руб./мес.</strong></p>
             `;
-        } else {
+        } else if (currentUser) {
             totalCostElement.innerHTML = '<p>У вас нет арендованных офисов</p>';
+        } else {
+            totalCostElement.innerHTML = '<p>Для бронирования офисов необходимо авторизоваться</p>';
         }
     });
 }
@@ -220,6 +236,17 @@ document.addEventListener('DOMContentLoaded', function(){
 {% block main %}
 <div class="office-container">
     <h1>Список кабинетов</h1>
+    
+    {% if session.get('login') %}
+    <div class="user-info">
+        <strong>Вы вошли как:</strong> {{ session.get('login') }}
+    </div>
+    {% else %}
+    <div class="user-info">
+        <p>Для бронирования офисов необходимо <a href="/lab5/login">авторизоваться</a></p>
+    </div>
+    {% endif %}
+    
     <ul id="office-list"></ul>
     <div id="total-cost">
         
