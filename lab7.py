@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, current_app
+from flask import Blueprint, render_template, request, session, current_app, abort, jsonify
 
 
 lab7 = Blueprint('lab7', __name__)
@@ -43,8 +43,17 @@ films = [
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return films
+    return jsonify(films)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    return films[id]
+    if id < 0 or id >= len(films):
+        abort(404, description=f"Фильм с индексом {id} не найден")
+    return jsonify(films[id]) 
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+def delete_film(id):
+    if id < 0 or id >= len(films):
+        abort(404, description=f"Фильм с индексом {id} не найден")
+    del films[id]
+    return '', 204
