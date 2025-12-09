@@ -4,6 +4,74 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='lab7/main.js') }}"></script>
+<style>
+    .modal {
+        display: none;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: white;
+        width: 420px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        position: fixed;
+        padding: 25px;
+        border: 2px solid #ff66b3;
+        border-radius: 8px;
+    }
+    
+    .modal label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 500;
+    }
+    
+    .modal input[type="text"],
+    .modal input[type="number"],
+    .modal textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    
+    .modal input:focus,
+    .modal textarea:focus {
+        outline: none;
+        border-color: #ff66b3;
+    }
+    
+    .modal textarea {
+        height: 80px;
+        resize: vertical;
+    }
+    
+    .modal button {
+        padding: 8px 20px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    
+    .modal button:first-of-type {
+        background: #ff66b3;
+        color: white;
+    }
+    
+    .modal button:last-of-type {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .modal i {
+        color: #666;
+        font-size: 12px;
+    }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -24,5 +92,31 @@
     </script>
     <div>
         <button onclick="addFilm()">Добавить фильм</button>
+    </div>
+    <div class="modal">
+        <input type="hidden" id="id">
+        <label>
+            Название фильма на русском:
+            <input type="text" id="title-ru">
+        </label><br>
+
+        <label>
+            Название фильма на оригинальном языке
+            <i>(если фильм русский, то оставте пустым):</i>
+            <input type="text" id="title">
+        </label><br>
+
+        <label>
+            Год выпуска:
+            <input type="number" id="year">
+        </label><br>
+
+        <label>
+            Описание:
+            <textarea id="description"></textarea>
+        </label><br>
+
+        <button onclick="sendFilm()">ОК</button>
+        <button onclick="cancel()">Отмена</button>
     </div>
 {% endblock %}
