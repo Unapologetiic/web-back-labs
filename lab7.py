@@ -8,26 +8,38 @@ from os import path
 lab7 = Blueprint('lab7', __name__)
 
 def db_connect():
-    def db_connect():
-        if current_app.config['DB_TYPE'] == 'postgres':
-            conn = psycopg2.connect(
-                host='127.0.0.1',
-                database='yana_kudeyariva_knowledge_base',
-                user='yana_kudeyariva_knowledge_base',
-                password='123'
+    """Подключение к базе данных в зависимости от типа"""
+    if current_app.config['DB_TYPE'] == 'postgres':
+        conn = psycopg2.connect(
+            host='127.0.0.1',
+            database='yana_kudeyariva_knowledge_base',
+            user='yana_kudeyariva_knowledge_base',
+            password='123'
+        )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS films (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                title_ru TEXT NOT NULL,
+                year INTEGER NOT NULL,
+                description TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-            cur = conn.cursor(cursor_factory=RealDictCursor)
-        else:
-            dir_path = path.dirname(path.realpath(__file__))
-            db_path = path.join(dir_path, "database.db")
-            conn = sqlite3.connect(db_path)
-            conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
+        """)
+        conn.commit()
 
-        return conn, cur
+    return conn, cur
 
 def db_close(conn, cur):
-    conn.commit()
+    """Закрытие соединения с базой данных"""
     cur.close()
     conn.close()
 
@@ -165,6 +177,7 @@ def delete_film(id):
         else:
             cur.execute("DELETE FROM films WHERE id = ?", (id,))
         
+        conn.commit()
         return '', 204
     finally:
         db_close(conn, cur)
@@ -216,6 +229,8 @@ def put_film(id):
                 validated_film['description'],
                 id
             ))
+        
+        conn.commit()
         
         # Возвращаем обновленный фильм
         if current_app.config.get('DB_TYPE') == 'postgres':
@@ -281,6 +296,7 @@ def add_film():
             ))
             new_id = cur.lastrowid
         
+        conn.commit()
         return jsonify({"id": new_id})
     finally:
         db_close(conn, cur)
