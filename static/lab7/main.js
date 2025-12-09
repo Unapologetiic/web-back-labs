@@ -107,17 +107,20 @@ function addFilm(){
     showModal();
 }
 
+
 function sendFilm(){
     const id = document.getElementById('id').value;
     const film = {
-        title: document.getElementById('title').value,
-        title_ru: document.getElementById('title-ru').value,
+        title: document.getElementById('title').value.trim(),
+        title_ru: document.getElementById('title-ru').value.trim(),
         year: document.getElementById('year').value,
-        description: document.getElementById('description').value
+        description: document.getElementById('description').value.trim()
     }
 
-    const url = `/lab7/rest-api/films/${id}`;
-    const method = id === '' ? 'POST':'PUT';
+    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
+    const method = id === '' ? 'POST' : 'PUT';
+
+    document.getElementById('description-error').innerText = '';
 
     fetch(url, {
         method: method,
@@ -128,15 +131,28 @@ function sendFilm(){
         if (resp.ok){
             fillFilmList();
             hideModal();   
-        } 
+            return {};
+        }
         return resp.json();
     })
     .then(function(errors){
-        if(errors.description)
-            document.getElementById('description-error').innerText = errors.description;
+
+        if (errors && Object.keys(errors).length > 0) {
+            
+            if (errors.description) {
+                document.getElementById('description-error').innerText = errors.description;
+            }
+            
+            if (!errors.description && errors[Object.keys(errors)[0]]) {
+                document.getElementById('description-error').innerText = errors[Object.keys(errors)[0]];
+            }
+        }
+    })
+    .catch(function(error) {
+        console.error('Ошибка:', error);
+        document.getElementById('description-error').innerText = 'Ошибка соединения с сервером';
     });
 }
-
 function editFilm(id) {
     fetch(`/lab7/rest-api/films/${id}`)
     .then(function (data){
