@@ -5,85 +5,292 @@
 {% block script %}
 <script src="{{ url_for('static', filename='lab7/main.js') }}"></script>
 <style>
+    /* Основные стили */
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+
+    /* Стили таблицы */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #ff66b3, #ff3385);
+        color: white;
+    }
+
+    th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Стили для названий фильмов */
+    .original-title {
+        font-style: italic;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .original-title::before {
+        content: "(";
+    }
+
+    .original-title::after {
+        content: ")";
+    }
+
+    /* Стили кнопок в таблице */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-buttons button {
+        padding: 6px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .edit-btn {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background: #45a049;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+    }
+
+    .delete-btn {
+        background: #f44336;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background: #d32f2f;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+    }
+
+    /* Кнопка добавления фильма */
+    .add-film-btn {
+        display: block;
+        margin: 20px auto 40px;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #ff66b3, #ff3385);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255, 102, 179, 0.3);
+    }
+
+    .add-film-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 102, 179, 0.4);
+    }
+
+    .add-film-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Модальное окно */
     .modal {
         display: none;
-        z-index: 100;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         background: white;
-        width: 420px;
+        width: 450px;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         position: fixed;
-        padding: 25px;
-        border: 2px solid #ff66b3;
-        border-radius: 8px;
+        padding: 30px;
+        border: none;
+        border-radius: 12px;
+        animation: modalFadeIn 0.3s ease-out;
     }
-    
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
     .modal label {
         display: block;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         font-weight: 500;
+        color: #333;
     }
-    
+
     .modal input[type="text"],
     .modal input[type="number"],
     .modal textarea {
         width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        padding: 10px;
+        margin-top: 8px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
         box-sizing: border-box;
+        font-size: 14px;
+        transition: border-color 0.2s;
     }
-    
+
     .modal input:focus,
     .modal textarea:focus {
         outline: none;
         border-color: #ff66b3;
+        box-shadow: 0 0 0 3px rgba(255, 102, 179, 0.1);
     }
-    
+
     .modal textarea {
-        height: 80px;
+        height: 100px;
         resize: vertical;
+        font-family: inherit;
     }
-    
-    .modal button {
-        padding: 8px 20px;
-        margin-right: 10px;
+
+    .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .modal-buttons button {
+        padding: 10px 25px;
         border: none;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
         font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s;
     }
-    
-    .modal button:first-of-type {
-        background: #ff66b3;
+
+    .ok-btn {
+        background: linear-gradient(135deg, #ff66b3, #ff3385);
         color: white;
     }
-    
-    .modal button:last-of-type {
-        background: #f0f0f0;
-        color: #333;
+
+    .ok-btn:hover {
+        background: linear-gradient(135deg, #ff3385, #ff0066);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 102, 179, 0.3);
     }
-    
-    .modal i {
+
+    .cancel-btn {
+        background: #f5f5f5;
         color: #666;
-        font-size: 12px;
+        border: 1px solid #ddd;
     }
-    .error-message{
-        color: red;
+
+    .cancel-btn:hover {
+        background: #e0e0e0;
+        transform: translateY(-1px);
+    }
+
+    .modal i {
+        color: #888;
+        font-size: 12px;
+        font-style: normal;
+    }
+
+    .error-message {
+        color: #f44336;
+        font-size: 12px;
+        margin-top: 5px;
+        min-height: 18px;
+    }
+
+    /* Затемнение фона при открытом модальном окне */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        table {
+            font-size: 14px;
+        }
+        
+        .modal {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .action-buttons button {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
 
 {% block main %}
-    <h1>Список фильмов</h1>
+    <h1>🎬 Список фильмов</h1>
 
     <table>
         <thead>
             <tr>
-                <th colspan="2">Название</th>
+                <th>Название</th>
+                <th>Оригинальное название</th>
                 <th>Год</th>
                 <th>Действие</th>
             </tr>
@@ -93,34 +300,39 @@
     <script>
         fillFilmList();
     </script>
-    <div>
-        <button onclick="addFilm()">Добавить фильм</button>
-    </div>
+    
+    <button class="add-film-btn" onclick="addFilm()">+ Добавить фильм</button>
+    
+    <div class="modal-overlay" id="modal-overlay" onclick="hideModal()"></div>
+    
     <div class="modal">
         <input type="hidden" id="id">
+        
         <label>
-            Название фильма на русском:
-            <input type="text" id="title-ru">
+            Название фильма на русском: *
+            <input type="text" id="title-ru" placeholder="Введите название на русском" required>
         </label><br>
 
         <label>
             Название фильма на оригинальном языке
-            <i>(если фильм русский, то оставте пустым):</i>
-            <input type="text" id="title">
+            <i>(если фильм русский, оставьте пустым)</i>
+            <input type="text" id="title" placeholder="Введите оригинальное название">
         </label><br>
 
         <label>
             Год выпуска:
-            <input type="number" id="year">
+            <input type="number" id="year" placeholder="Год" min="1895" max="2025">
         </label><br>
 
         <label>
-            Описание:
-            <textarea id="description"></textarea>
+            Описание: *
+            <textarea id="description" placeholder="Введите описание фильма..." required></textarea>
             <div id="description-error" class="error-message"></div>
         </label><br>
 
-        <button onclick="sendFilm()">ОК</button>
-        <button onclick="cancel()">Отмена</button>
+        <div class="modal-buttons">
+            <button class="cancel-btn" onclick="cancel()">Отмена</button>
+            <button class="ok-btn" onclick="sendFilm()">Сохранить</button>
+        </div>
     </div>
 {% endblock %}

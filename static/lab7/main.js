@@ -6,43 +6,73 @@ function fillFilmList() {
     .then(function (films){
         let tbody = document.getElementById('film-list');
         tbody.innerHTML = '';
-        for(let i = 0; i<films.length; i++) {
+        for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitle = document.createElement('td');
+            
             let tdTitleRus = document.createElement('td');
+            
+            
+            let tdTitle = document.createElement('td');
+            
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            tdTitle.innerHTML = films[i].title == films[i].title_ru ? '': films[i].title;
+            
             tdTitleRus.innerHTML = films[i].title_ru;
+            tdTitleRus.style.fontWeight = '500';
+            
+            
+            let originalTitle = films[i].title;
+            if (originalTitle && originalTitle !== films[i].title_ru) {
+                
+                let titleSpan = document.createElement('span');
+                titleSpan.className = 'original-title';
+                titleSpan.textContent = originalTitle;
+                tdTitle.appendChild(titleSpan);
+            } else {
+                
+                tdTitle.innerHTML = '<span style="color: #999; font-style: italic;">(нет)</span>';
+            }
+            
             tdYear.innerHTML = films[i].year;
+            tdYear.style.fontWeight = '500';
+            
+            let buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'action-buttons';
             
             let editButton = document.createElement('button');
-            editButton.innerText = 'редактировать'
+            editButton.className = 'edit-btn';
+            editButton.innerText = 'Редактировать';
             editButton.onclick = function(){
                 editFilm(i);
             }
 
             let delButton = document.createElement('button');
-            delButton.innerText = 'удалить';
+            delButton.className = 'delete-btn';
+            delButton.innerText = 'Удалить';
             delButton.onclick = function(){
                 deleteFilm(i, films[i].title_ru);
             }
 
-            tdActions.append(editButton);
-            tdActions.append(delButton);
+            buttonsContainer.append(editButton);
+            buttonsContainer.append(delButton);
+            tdActions.appendChild(buttonsContainer);
 
-            tr.append(tdTitle);
             tr.append(tdTitleRus);
+            tr.append(tdTitle);
             tr.append(tdYear);
             tr.append(tdActions);
 
             tbody.append(tr);
         }
     })
+    .catch(error => {
+        console.error('Ошибка загрузки фильмов:', error);
+        let tbody = document.getElementById('film-list');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #f44336; padding: 20px;">Ошибка загрузки данных</td></tr>';
+    });
 }
-
 function deleteFilm(id, title) {
     if (! confirm(`Вы точно хотите удалить фильм? "${title}"?`))
         return
@@ -120,7 +150,7 @@ function editFilm(id) {
         document.getElementById('description').value = film.description;
 
         document.getElementById('description-error').innerText = ''
-        
+
         showModal()
     })
 }
