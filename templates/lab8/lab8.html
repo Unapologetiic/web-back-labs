@@ -7,39 +7,50 @@
         <h2>Текущий пользователь: <span style="color: #ea66d6; font-weight: bold;">
          {{ username }}
         </span></h2>
-        <div style="text-align: right; margin-top: 10px;">
-            {% if login %}
-                <a href="/lab8/logout" style="color: #e91e63; text-decoration: none;">Выйти</a>
-            {% endif %}
-        </div>
     </div>
 
     <h1>База знаний</h1>
     
     <div class="nav-menu">
+        {% if not login %}
         <div class="nav-card">
             <a href="/lab8/login" class="nav-link">
                 <h3>Вход</h3>
             </a>
         </div>
+        {% endif %}
         
+        {% if not login %}
         <div class="nav-card">
             <a href="/lab8/register" class="nav-link">
                 <h3>Регистрация</h3>
             </a>
         </div>
+        {% endif %}
         
+        {% if login %}
         <div class="nav-card">
-            <a href="/lab8/list" class="nav-link">
+            <div class="nav-link" style="cursor: default;">
                 <h3>Список статей</h3>
-            </a>
+            </div>
         </div>
+        {% endif %}
         
+        {% if login %}
         <div class="nav-card">
-            <a href="/lab8/create" class="nav-link">
+            <div class="nav-link" style="cursor: default;">
                 <h3>Создать статью</h3>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if login %}
+        <div class="nav-card">
+            <a href="/lab8/logout" class="nav-link">
+                <h3>Выйти</h3>
             </a>
         </div>
+        {% endif %}
     </div>
 
     <style>
