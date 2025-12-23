@@ -194,3 +194,90 @@ def delete_article(article_id):
     db.session.commit()
     
     return redirect('/lab8/articles')
+
+
+@lab8.route('/lab8/public')
+def public_articles():
+    # Получаем все публичные статьи, отсортированные по убыванию лайков
+    public_articles_list = articles.query.filter_by(is_public=True).order_by(articles.likes.desc()).all()
+    
+    # Получаем имя пользователя для отображения в шаблоне
+    username = 'anonymous'
+    if 'user_id' in session:
+        user = users.query.get(session['user_id'])
+        if user:
+            username = user.login
+    
+    return render_template('lab8/public.html', 
+                         articles=public_articles_list,
+                         username=username)
+
+
+# Поиск по статьям
+@lab8.route('/lab8/search', methods=['GET', 'POST'])
+def search_articles():
+    search_results = []
+    search_query = ""
+    
+    if request.method == 'POST':
+        search_query = request.form.get('search_query', '').strip()
+        
+        if search_query:
+            # Регистронезависимый поиск в заголовке и тексте статей
+            if 'user_id' in session:
+                user_id = session['user_id']
+                # Для авторизованных: свои статьи + публичные статьи других пользователей
+                search_results = articles.query.filter(
+                    db.or_(
+                        db.and_(
+                            articles.login_id == user_id,
+                            db.or_(
+                                articles.title.ilike(f'%{search_query}%'),
+                                articles.article_text.ilike(f'%{search_query}%')
+                            )
+                        ),
+                        db.and_(
+                            articles.is_public == True,
+                            articles.login_id != user_id,
+                            db.or_(
+                                articles.title.ilike(f'%{search_query}%'),
+                                articles.article_text.ilike(f'%{search_query}%')
+                            )
+                        )
+                    )
+                ).all()
+            else:
+                # Для неавторизованных: только публичные статьи
+                search_results = articles.query.filter(
+                    articles.is_public == True,
+                    db.or_(
+                        articles.title.ilike(f'%{search_query}%'),
+                        articles.article_text.ilike(f'%{search_query}%')
+                    )
+                ).all()
+    
+    # Получаем имя пользователя для шаблона
+    username = 'anonymous'
+    if 'user_id' in session:
+        user = users.query.get(session['user_id'])
+        if user:
+            username = user.login
+    
+    return render_template('lab8/search.html',
+                         search_results=search_results,
+                         search_query=search_query,
+                         username=username)
+
+
+@lab8.route('/lab8/like/<int:article_id>', methods=['POST'])  
+def like_article(article_id):
+    article = articles.query.get_or_404(article_id)
+    
+    # Проверяем, что статья публичная
+    if not article.is_public:
+        return "Эта статья не публичная", 403
+    
+    article.likes += 1
+    db.session.commit()
+    
+    return redirect('/lab8/public')

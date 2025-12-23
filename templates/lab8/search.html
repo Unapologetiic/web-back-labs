@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8 - Поиск статей{% endblock %}
+
+{% block main %}
+    <div class="search-container">
+        <h1 style="color: #2c3e50; margin-bottom: 25px;">Поиск статей</h1>
+        
+        <form action="/lab8/search" method="post" class="search-form">
+            <div class="search-input-group">
+                <input type="text" 
+                       name="search_query" 
+                       class="search-input" 
+                       placeholder="Введите запрос для поиска..."
+                       value="{{ search_query }}"
+                       required>
+                <button type="submit" class="btn btn-primary">
+                    🔍 Найти
+                </button>
+            </div>
+            <small style="color: #666; margin-top: 5px; display: block;">
+                Поиск выполняется по заголовку и тексту статей
+            </small>
+        </form>
+        
+        {% if search_query %}
+            <div class="search-results-info" style="margin-top: 30px;">
+                <h3>Результаты поиска для "{{ search_query }}"</h3>
+                <p>Найдено статей: <strong>{{ search_results|length }}</strong></p>
+            </div>
+            
+            {% if search_results %}
+                <div class="articles-grid" style="margin-top: 20px;">
+                    {% for article in search_results %}
+                    <div class="article-card">
+                        <div class="article-header">
+                            <h3>{{ article.title }}</h3>
+                            <div class="article-meta">
+                                {% if article.is_favorite %}
+                                    <span class="badge badge-favorite">Избранное</span>
+                                {% endif %}
+                                {% if article.is_public %}
+                                    <span class="badge badge-public">Публичная</span>
+                                {% else %}
+                                    <span class="badge badge-private">Приватная</span>
+                                {% endif %}
+                                <span class="badge badge-likes">{{ article.likes }} лайков</span>
+                                {% if article.login_id != session.get('user_id', 0) %}
+                                    <span class="badge badge-author">Автор: {{ article.user.login if article.user else 'Неизвестно' }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="article-preview">
+                            {% set text = article.article_text %}
+                            {% set query_lower = search_query.lower() %}
+                            {% set text_lower = text.lower() %}
+                            {% set pos = text_lower.find(query_lower) %}
+                            
+                            {% if pos >= 0 %}
+                                {% set start = max(0, pos - 100) %}
+                                {% set end = min(text|length, pos + search_query|length + 100) %}
+                                {% if start > 0 %}...{% endif %}
+                                {{ text[start:end]|replace(search_query, '<mark>' ~ search_query ~ '</mark>')|safe }}
+                                {% if end < text|length %}...{% endif %}
+                            {% else %}
+                                {{ text[:200] }}{% if text|length > 200 %}...{% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="article-actions">
+                            {% if article.login_id == session.get('user_id', 0) %}
+                                <a href="/lab8/edit/{{ article.id }}" class="btn btn-sm btn-secondary">Редактировать</a>
+                            {% endif %}
+                            {% if article.is_public %}
+                                <span class="article-info">Публичная статья</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state" style="margin-top: 40px;">
+                    <h3>Ничего не найдено</h3>
+                    <p>Попробуйте изменить поисковый запрос</p>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <div class="search-footer" style="margin-top: 40px;">
+            <a href="/lab8/" class="btn btn-secondary">На главную</a>
+            {% if username != 'anonymous' %}
+                <a href="/lab8/articles" class="btn btn-primary" style="margin-left: 10px;">Мои статьи</a>
+            {% endif %}
+            <a href="/lab8/public" class="btn btn-primary" style="margin-left: 10px;">Публичные статьи</a>
+        </div>
+    </div>
+
+    <style>
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .search-form {
+            margin-bottom: 30px;
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #f79fe1;
+            box-shadow: 0 0 0 3px rgba(247, 159, 225, 0.2);
+        }
+        
+        mark {
+            background-color: #ffeb3b;
+            padding: 2px 0;
+            font-weight: bold;
+        }
+        
+        .badge-author {
+            background: #e8f4fc;
+            color: #2980b9;
+            border: 1px solid #2980b9;
+        }
+        
+        .article-info {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        /* Стили для сетки статей (такие же как в articles.html) */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .article-header {
+            margin-bottom: 15px;
+        }
+        
+        .article-header h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .article-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .badge-favorite {
+            background: #fff9e6;
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+        
+        .badge-public {
+            background: #e8f6f3;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        
+        .badge-private {
+            background: #f2f4f4;
+            color: #7f8c8d;
+            border: 1px solid #7f8c8d;
+        }
+        
+        .badge-likes {
+            background: #ffe6e6;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        .article-preview {
+            flex-grow: 1;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .article-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px dashed #ddd;
+        }
+        
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .search-footer {
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
