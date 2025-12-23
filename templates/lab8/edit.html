@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8 - Редактирование статьи{% endblock %}
+
+{% block main %}
+    <div class="form-container">
+        <h1 style="color: #2c3e50; margin-bottom: 25px;">Редактирование статьи</h1>
+        
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <form action="/lab8/edit/{{ article.id }}" method="post" class="article-form">
+            <div class="form-group">
+                <label>
+                    Заголовок:
+                    <input type="text" name="title" class="form-input" value="{{ article.title }}" required>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    Текст статьи:
+                    <textarea name="article_text" class="form-textarea" rows="10" required>{{ article.article_text }}</textarea>
+                </label>
+            </div>
+            
+            <div class="form-options">
+                <div class="option-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="is_favorite" {% if article.is_favorite %}checked{% endif %}>
+                        <span>В избранном</span>
+                    </label>
+                </div>
+                
+                <div class="option-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="is_public" {% if article.is_public %}checked{% endif %}>
+                        <span>Публичная статья</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Сохранить изменения
+                </button>
+                <a href="/lab8/articles" class="btn btn-secondary">Отмена</a>
+                <a href="/lab8/delete/{{ article.id }}" class="btn btn-danger" 
+                     onclick="return confirm('Вы уверены, что хотите удалить эту статью?')">
+                     Удалить статью
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+    </style>
+{% endblock %}

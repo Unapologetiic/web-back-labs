@@ -1,29 +1,143 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 8{% endblock %}
+{% block lab %}Лабораторная работа 8 - Регистрация{% endblock %}
 
 {% block main %}
-    <h1>Регистрация</h1>
-    
-    {% if error %}
-        <div style="color: red;">
-            {{ error }}
-        </div>
-    {% endif %}
-    
-    <form action="/lab8/register" method="post">
-        <div>
-            <label>
-                Логин: <input type="text" name="login">
-            </label>
-        </div>
+    <div class="form-container">
+        <h1 style="color: #2c3e50; margin-bottom: 25px;">Регистрация</h1>
         
-        <div>
-            <label>
-                Пароль: <input type="password" name="password">
-            </label>
-        </div>
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
         
-        <button type="submit">Зарегистрироваться</button>
-    </form>
+        <form action="/lab8/register" method="post" class="auth-form">
+            <div class="form-group">
+                <label>
+                    Логин:
+                    <input type="text" name="login" class="form-input" placeholder="Введите ваш логин" required>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    Пароль:
+                    <input type="password" name="password" class="form-input" placeholder="Введите пароль" required>
+                </label>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Зарегистрироваться
+                </button>
+                <a href="/lab8/" class="btn btn-secondary">На главную</a>
+                <a href="/lab8/login" class="btn btn-link">Уже есть аккаунт? Войти</a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .error-message {
+            background: #ffe6e6;
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c0392b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .auth-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #f79fe1;
+            box-shadow: 0 0 0 3px rgba(247, 159, 225, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f79fe1 0%, #ea66d6 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 159, 225, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .btn-link {
+            color: #3498db;
+            background: none;
+            padding: 10px;
+        }
+        
+        .btn-link:hover {
+            text-decoration: underline;
+            background: #f8f9fa;
+        }
+    </style>
 {% endblock %}

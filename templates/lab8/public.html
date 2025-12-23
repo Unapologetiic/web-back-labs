@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8 - Публичные статьи{% endblock %}
+
+{% block main %}
+    <div class="articles-container">
+        <h1 style="color: #2c3e50; margin-bottom: 25px;">Публичные статьи</h1>
+        
+        {% if articles %}
+            <p>Всего публичных статей: <strong>{{ articles|length }}</strong></p>
+            
+            <div class="articles-grid">
+                {% for article in articles %}
+                <div class="article-card">
+                    <div class="article-header">
+                        <h3>{{ article.title }}</h3>
+                        <div class="article-meta">
+                            {% if article.is_favorite %}
+                                <span class="badge badge-favorite">Избранное</span>
+                            {% endif %}
+                            <span class="badge badge-public">Публичная</span>
+                            <span class="badge badge-likes">{{ article.likes }} лайков</span>
+                        </div>
+                    </div>
+                    
+                    <div class="article-preview">
+                        {{ article.article_text[:200] }}{% if article.article_text|length > 200 %}...{% endif %}
+                    </div>
+                    
+                    <div class="article-author">
+                        Автор: <strong>{{ article.user.login if article.user else 'Неизвестно' }}</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>Нет публичных статей</h3>
+                <p>Пока никто не опубликовал статьи для общего доступа</p>
+            </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px;">
+            <a href="/lab8/" class="btn btn-secondary">На главную</a>
+            {% if username != 'anonymous' %}
+            <a href="/lab8/articles" class="btn btn-primary" style="margin-left: 10px;">Мои статьи</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <style>
+        /* Стили такие же как в articles.html */
+    </style>
+{% endblock %}

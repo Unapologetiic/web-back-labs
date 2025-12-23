@@ -12,7 +12,7 @@
     <h1>База знаний</h1>
     
     <div class="nav-menu">
-        {% if not login %}
+        {% if username == 'anonymous' %}
         <div class="nav-card">
             <a href="/lab8/login" class="nav-link">
                 <h3>Вход</h3>
@@ -20,7 +20,7 @@
         </div>
         {% endif %}
         
-        {% if not login %}
+        {% if username == 'anonymous' %}
         <div class="nav-card">
             <a href="/lab8/register" class="nav-link">
                 <h3>Регистрация</h3>
@@ -28,23 +28,23 @@
         </div>
         {% endif %}
         
-        {% if login %}
-        <div class="nav-card">
-            <div class="nav-link" style="cursor: default;">
-                <h3>Список статей</h3>
+        {% if username != 'anonymous' %}
+            <div class="nav-card">
+                <a href="/lab8/articles" class="nav-link">  <!-- Добавьте ссылку здесь -->
+                    <h3>Список статей</h3>
+                </a>
             </div>
-        </div>
         {% endif %}
         
-        {% if login %}
-        <div class="nav-card">
-            <div class="nav-link" style="cursor: default;">
-                <h3>Создать статью</h3>
+        {% if username != 'anonymous' %}
+            <div class="nav-card">
+                <a href="/lab8/create" class="nav-link">  
+                    <h3>Создать статью</h3>
+                </a>
             </div>
-        </div>
         {% endif %}
         
-        {% if login %}
+        {% if username != 'anonymous' %}
         <div class="nav-card">
             <a href="/lab8/logout" class="nav-link">
                 <h3>Выйти</h3>

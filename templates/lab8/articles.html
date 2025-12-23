@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8 - Список статей{% endblock %}
+
+{% block main %}
+    <div class="articles-container">
+        <div class="articles-header">
+            <h1>Мои статьи</h1>
+            <a href="/lab8/create" class="btn btn-primary">
+                Создать новую статью
+            </a>
+        </div>
+        
+        {% if articles %}
+            <div class="articles-grid">
+                {% for article in articles %}
+                <div class="article-card">
+                    <div class="article-header">
+                        <h3>{{ article.title }}</h3>
+                        <div class="article-meta">
+                            {% if article.is_favorite %}
+                                <span class="badge badge-favorite">Избранное</span>
+                            {% endif %}
+                            {% if article.is_public %}
+                                <span class="badge badge-public">Публичная</span>
+                            {% else %}
+                                <span class="badge badge-private">Приватная</span>
+                            {% endif %}
+                            <span class="badge badge-likes">{{ article.likes }} лайков</span>
+                        </div>
+                    </div>
+                    
+                    <div class="article-preview">
+                        {{ article.article_text[:200] }}{% if article.article_text|length > 200 %}...{% endif %}
+                    </div>
+                    
+                    <div class="article-actions">
+                        <a href="/lab8/edit/{{ article.id }}" class="btn btn-sm btn-secondary">Редактировать</a>
+                        <a href="/lab8/delete/{{ article.id }}" class="btn btn-sm btn-danger" 
+                           onclick="return confirm('Вы уверены, что хотите удалить статью &quot;{{ article.title }}&quot;?')">
+                            Удалить
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+                <h3>У вас еще нет статей</h3>
+                <p>Создайте свою первую статью!</p>
+                <a href="/lab8/create" class="btn btn-primary" style="margin-top: 20px;">
+                    Создать статью
+                </a>
+            </div>
+        {% endif %}
+        
+        <div class="articles-footer">
+            <a href="/lab8/" class="btn btn-secondary">На главную</a>
+        </div>
+    </div>
+
+    <style>
+        .articles-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            min-height: calc(100vh - 200px); /* Убедитесь, что контейнер занимает всю высоту */
+        }
+        
+        .articles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .articles-header h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .article-header {
+            margin-bottom: 15px;
+        }
+        
+        .article-header h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+            line-height: 1.4;
+        }
+        
+        .article-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .badge-favorite {
+            background: #fff9e6;
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+        
+        .badge-public {
+            background: #e8f6f3;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        
+        .badge-private {
+            background: #f2f4f4;
+            color: #7f8c8d;
+            border: 1px solid #7f8c8d;
+        }
+        
+        .badge-likes {
+            background: #ffe6e6;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        .article-preview {
+            flex-grow: 1;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        
+        .article-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f79fe1 0%, #ea66d6 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 159, 225, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px dashed #ddd;
+            margin: 40px 0;
+        }
+        
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .articles-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        
+        /* Убедитесь, что кнопки не конфликтуют с глобальными стилями */
+        .btn {
+            box-sizing: border-box;
+        }
+    </style>
+{% endblock %}

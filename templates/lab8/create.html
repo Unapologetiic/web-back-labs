@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 8 - Вход{% endblock %}
+{% block lab %}Лабораторная работа 8 - Создание статьи{% endblock %}
 
 {% block main %}
     <div class="form-container">
-        <h1 style="color: #2c3e50; margin-bottom: 25px;">Вход в систему</h1>
+        <h1 style="color: #2c3e50; margin-bottom: 25px;">Создание новой статьи</h1>
         
         {% if error %}
             <div class="error-message">
@@ -12,41 +12,53 @@
             </div>
         {% endif %}
         
-        <form action="/lab8/login" method="post" class="auth-form">
+        <form action="/lab8/create" method="post" class="article-form">
             <div class="form-group">
                 <label>
-                    Логин:
-                    <input type="text" name="login" class="form-input" placeholder="Введите ваш логин" required>
+                    Заголовок:
+                    <input type="text" name="title" class="form-input" placeholder="Введите заголовок статьи" required>
                 </label>
             </div>
             
             <div class="form-group">
                 <label>
-                    Пароль:
-                    <input type="password" name="password" class="form-input" placeholder="Введите пароль" required>
+                    Текст статьи:
+                    <textarea name="article_text" class="form-textarea" rows="10" placeholder="Введите текст статьи..." required></textarea>
                 </label>
             </div>
             
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" name="remember">
-                    <span>Запомнить меня</span>
-                </label>
+            <div class="form-options">
+                <div class="option-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="is_favorite">
+                        <span>Добавить в избранное</span>
+                    </label>
+                </div>
+                
+                <div class="option-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="is_public" checked>
+                        <span>Сделать публичной</span>
+                    </label>
+                    <small style="color: #666; margin-top: 5px; display: block;">
+                        Публичные статьи видны всем пользователям
+                    </small>
+                </div>
             </div>
             
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
-                    Войти
+                    Сохранить статью
                 </button>
-                <a href="/lab8/" class="btn btn-secondary">На главную</a>
-                <a href="/lab8/register" class="btn btn-link">Нет аккаунта? Зарегистрироваться</a>
+                <a href="/lab8/articles" class="btn btn-secondary">К списку статей</a>
+                <a href="/lab8/" class="btn btn-link">На главную</a>
             </div>
         </form>
     </div>
 
     <style>
         .form-container {
-            max-width: 500px;
+            max-width: 700px;
             margin: 0 auto;
             padding: 30px;
             background: white;
@@ -63,7 +75,7 @@
             border-left: 4px solid #c0392b;
         }
         
-        .auth-form {
+        .article-form {
             margin-top: 20px;
         }
         
@@ -89,15 +101,40 @@
             box-sizing: border-box;
         }
         
-        .form-input:focus {
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 200px;
+            font-family: inherit;
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: #f79fe1;
             box-shadow: 0 0 0 3px rgba(247, 159, 225, 0.2);
         }
         
+        .form-options {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .option-group {
+            margin-bottom: 15px;
+        }
+        
         .form-actions {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 30px;
         }
@@ -115,13 +152,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
         }
         
         .btn-secondary {
