@@ -5,11 +5,7 @@
 {% block main %}
     <div class="user-info">
         <h2>Текущий пользователь: <span style="color: #ea66d6; font-weight: bold;">
-            {% if login %}
-                {{ login }}
-            {% else %}
-                Anonymous
-            {% endif %}
+         {{ username }}
         </span></h2>
         <div style="text-align: right; margin-top: 10px;">
             {% if login %}
