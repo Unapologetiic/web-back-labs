@@ -3,88 +3,194 @@
 {% block lab %}Лабораторная работа 9 - Новогодние подарки{% endblock %}
 
 {% block main %}
-<div style="padding: 20px;">
-    <h1>Новогодние подарки</h1>
+<div style="padding: 20px; background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%); min-height: 100vh; color: white;">
+    <h1 style="text-align: center; color: #ffcc00; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+        🎅 Новогодние Подарки 🎁
+    </h1>
     
-    <div style="margin: 20px 0; padding: 10px; background: #f0f0f0; border-radius: 5px;">
-        Открыто: <span id="openedCount">{{ opened_count }}</span>/3 | 
-        Осталось: <span id="unopenedCount">{{ unopened_count }}</span>
+    <!-- Информация о пользователе -->
+    <div style="text-align: center; margin-bottom: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; max-width: 500px; margin-left: auto; margin-right: auto;">
+        {% if authenticated %}
+            <div style="margin-bottom: 10px; font-size: 18px;">
+                👤 Вы вошли как: <strong style="color: #ffcc00;">{{ username }}</strong>
+            </div>
+            <a href="/lab8/logout" style="color: #ccc; font-size: 14px;">Выйти</a>
+        {% else %}
+            <div style="margin-bottom: 10px; font-size: 18px;">
+                👤 Вы: <strong>Гость</strong>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="/lab8/login" style="margin-right: 10px; padding: 8px 16px; background: #4caf50; color: white; text-decoration: none; border-radius: 5px;">
+                    🔐 Войти
+                </a>
+                <a href="/lab8/register" style="padding: 8px 16px; background: #2196f3; color: white; text-decoration: none; border-radius: 5px;">
+                    📝 Регистрация
+                </a>
+            </div>
+        {% endif %}
     </div>
     
-    <p style="color: #666; margin-bottom: 20px;">
-        Нажмите на любой подарок. Можно открыть только 3!
+    <!-- Статистика -->
+    <div style="text-align: center; margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.15); border-radius: 15px; max-width: 400px; margin-left: auto; margin-right: auto; border: 2px solid #ffcc00;">
+        <div style="font-size: 20px; margin-bottom: 15px; color: #ffcc00;">
+            📊 <strong>Статистика:</strong>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 40px;">
+            <div>
+                <div style="font-size: 32px; color: #4caf50; font-weight: bold;">{{ opened_count }}/3</div>
+                <div style="font-size: 16px; color: #ccc;">Открыто</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; color: #ff9800; font-weight: bold;">{{ unopened_count }}</div>
+                <div style="font-size: 16px; color: #ccc;">Осталось</div>
+            </div>
+        </div>
+    </div>
+    
+    <p style="text-align: center; color: #ccc; margin-bottom: 30px; font-size: 18px; max-width: 600px; margin-left: auto; margin-right: auto;">
+        🎄 Нажмите на любую коробку с подарком. Можно открыть только 3! 🎄
+        {% if not authenticated %}
+        <br><span style="color: #ff9800; font-size: 16px;">⭐ Некоторые подарки доступны только авторизованным пользователям</span>
+        {% endif %}
     </p>
     
     <!-- Контейнер для подарков -->
-    <div style="position: relative; min-height: 600px; margin: 20px 0;">
+    <div style="position: relative; min-height: 500px; margin: 30px 0; background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; border: 2px solid rgba(255, 204, 0, 0.3);">
         {% for gift in gifts %}
         <div style="position: absolute; 
                     left: {{ gift.left }}%; 
                     top: {{ gift.top }}%;
-                    cursor: {% if gift.opened %}default{% else %}pointer{% endif %};
-                    text-align: center;"
+                    cursor: {% if gift.opened %}default{% else %}{% if gift.available %}pointer{% else %}not-allowed{% endif %}{% endif %};
+                    text-align: center;
+                    transition: transform 0.3s, filter 0.3s;
+                    {% if not gift.opened and gift.available %}
+                    &:hover { transform: scale(1.1); filter: brightness(1.2); }
+                    {% endif %}"
              data-id="{{ gift.id }}"
-             onclick="openGift({{ gift.id }}, this)">
+             onclick="openGift({{ gift.id }}, this, {{ gift.auth_required|lower }})"
+             title="{{ gift.tooltip }}">
             
             {% if gift.opened %}
             <!-- Открытый подарок - галочка -->
-            <div style="width: 80px; height: 80px; border: 2px solid green; 
-                       border-radius: 10px; display: flex; align-items: center; 
-                       justify-content: center; font-size: 40px; color: green;">
+            <div style="width: 80px; height: 80px; border: 3px solid #4caf50; 
+                       border-radius: 15px; display: flex; align-items: center; 
+                       justify-content: center; font-size: 40px; color: #4caf50; background: white;">
                 ✓
             </div>
-            <div style="margin-top: 5px; color: green; font-size: 14px;">
+            <div style="margin-top: 8px; color: #4caf50; font-size: 14px; font-weight: bold;">
                 Открыт
             </div>
             {% else %}
-            <!-- Закрытый подарок - PNG картинка -->
-            <div style="width: 80px; height: 80px; border: 2px solid #ccc; 
-                       border-radius: 10px; display: flex; align-items: center; 
-                       justify-content: center; overflow: hidden;">
-                <img src="{{ url_for('static', filename='lab9/' + gift.image) }}" 
-                     alt="Подарок {{ gift.name }}"
-                     style="width: 100%; height: 100%; object-fit: contain; padding: 5px;">
+            <!-- Закрытый подарок -->
+            <div style="width: 80px; height: 80px; border: 3px solid {% if not gift.available %}#666{% else %}#ff9800{% endif %}; 
+                       border-radius: 15px; display: flex; align-items: center; 
+                       justify-content: center; overflow: hidden; background: white; position: relative;">
+                {% if not gift.available %}
+                <!-- Подарок, требующий авторизации -->
+                <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f0f0f0 0%, #ccc 100%);">
+                    <div style="font-size: 30px; opacity: 0.7;">🎁</div>
+                    <div style="font-size: 20px; color: #999; position: absolute; bottom: 5px;">🔒</div>
+                </div>
+                {% else %}
+                <!-- Обычный подарок - показываем картинку -->
+                <img src="{{ url_for('static', filename='lab9/gift' ~ gift.id ~ '.png') }}" 
+                     alt="Подарок {{ gift.id }}"
+                     style="width: 100%; height: 100%; object-fit: cover; padding: 5px;"
+                     onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div style=\'font-size: 40px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;\'>🎁</div>';">
+                {% endif %}
             </div>
-            <div style="margin-top: 5px; font-size: 14px; color: #333;">
+            <div style="margin-top: 8px; font-size: 14px; color: {% if not gift.available %}#999{% else %}#ffcc00{% endif %}; font-weight: bold;">
                 {{ gift.name }}
+                {% if not gift.available %}
+                <br><span style="font-size: 12px; color: #ff9800;">(требуется вход)</span>
+                {% endif %}
             </div>
             {% endif %}
         </div>
         {% endfor %}
     </div>
     
-    <div style="margin-top: 30px;">
-        <button onclick="resetGame()" style="padding: 10px 20px; margin-right: 10px;">
-            🔄 Начать заново
+    <!-- Кнопки управления -->
+    <div style="text-align: center; margin-top: 40px;">
+        {% if authenticated %}
+        <button onclick="resetGame()" 
+                style="padding: 12px 30px; margin-right: 20px; background: linear-gradient(45deg, #d32f2f, #ff5722); color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; font-weight: bold;">
+            🎅 Дед Мороз (наполнить заново)
         </button>
-        <a href="/" style="padding: 10px 20px; background: #666; color: white; text-decoration: none; border-radius: 5px;">
+        {% endif %}
+        
+        <a href="/" style="padding: 10px 25px; background: #666; color: white; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold;">
             ← На главную
         </a>
     </div>
 </div>
 
-<!-- Простое модальное окно -->
+<!-- Модальное окно с поздравлением -->
 <div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; 
-      height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; 
+      height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; 
       align-items: center;">
     
-    <div style="background: white; padding: 20px; border-radius: 10px; max-width: 500px; width: 90%;">
-        <h3 style="margin-top: 0;">Поздравление!</h3>
+    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 30px; border-radius: 20px; max-width: 500px; width: 90%; border: 3px solid #ffcc00; position: relative;">
+        <button onclick="closeModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #ffcc00;">✕</button>
         
-        <div id="modalContent" style="margin: 15px 0;">
-            <!-- Здесь будет картинка и сообщение -->
+        <h3 style="margin-top: 0; color: #ffcc00; text-align: center; font-size: 26px;">
+            🎉 Поздравление! 🎉
+        </h3>
+        
+        <div id="modalContent" style="margin: 25px 0;">
+            <!-- Здесь будет картинка подарка и сообщение -->
         </div>
         
-        <button onclick="closeModal()" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 5px;">
+        <button onclick="closeModal()" 
+                style="padding: 12px 40px; background: linear-gradient(45deg, #4caf50, #8bc34a); color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; display: block; margin: 0 auto; font-weight: bold;">
             Закрыть
         </button>
     </div>
 </div>
 
+<!-- Модальное окно для авторизации -->
+<div id="authModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; 
+      height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; 
+      align-items: center;">
+    
+    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 30px; border-radius: 20px; max-width: 450px; width: 90%; border: 3px solid #ff9800;">
+        <h3 style="margin-top: 0; color: #ff9800; text-align: center; font-size: 24px;">
+            🔒 Требуется авторизация
+        </h3>
+        
+        <div id="authModalContent" style="margin: 20px 0; text-align: center; color: white;">
+            <div style="font-size: 60px; margin-bottom: 15px;">🎁</div>
+            <p style="font-size: 18px; margin-bottom: 10px;">Этот подарок доступен только авторизованным пользователям.</p>
+            <p style="color: #ccc; font-size: 16px;">Войдите или зарегистрируйтесь, чтобы открыть этот подарок!</p>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+            <button onclick="window.location.href='/lab8/login'" 
+                    style="padding: 12px 25px; background: linear-gradient(45deg, #4caf50, #2e7d32); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 15px;">
+                🔐 Войти
+            </button>
+            <button onclick="window.location.href='/lab8/register'" 
+                    style="padding: 12px 25px; background: linear-gradient(45deg, #2196f3, #0d47a1); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 15px;">
+                📝 Регистрация
+            </button>
+            <button onclick="closeAuthModal()" 
+                    style="padding: 12px 25px; background: #666; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 15px;">
+                Отмена
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     // Открытие подарка
-    async function openGift(giftId, element) {
+    async function openGift(giftId, element, authRequired) {
         if (element.style.cursor === 'default') return;
+        
+        // Проверяем, доступен ли подарок
+        if (element.style.cursor === 'not-allowed') {
+            showAuthModal();
+            return;
+        }
         
         try {
             const response = await fetch('/lab9/open', {
@@ -96,63 +202,100 @@
             const data = await response.json();
             
             if (data.success) {
-                // Показываем поздравление С картинкой подарка
+                // Показываем поздравление
                 const modalContent = document.getElementById('modalContent');
                 modalContent.innerHTML = `
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <img src="${data.image}" alt="Подарок" 
-                             style="width: 100px; height: 100px; object-fit: contain;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${data.image}" alt="Открытый подарок" 
+                             style="width: 150px; height: 150px; object-fit: contain; border-radius: 15px; border: 3px solid #ffcc00; padding: 10px; background: white;">
                     </div>
-                    <div style="padding: 15px; background: #f9f9f9; border-radius: 5px; font-size: 18px; text-align: center;">
+                    <div style="padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; font-size: 18px; text-align: center; color: white; border-left: 5px solid #ff9800;">
+                        <div style="font-size: 20px; color: #ffcc00; margin-bottom: 10px;">🎁 Вам выпало:</div>
                         ${data.message}
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; color: #ccc; font-size: 16px;">
+                        📊 Открыто подарков: <strong style="color: #4caf50;">${data.opened_count}/3</strong> | 
+                        Осталось: <strong style="color: #ff9800;">${data.unopened_count}</strong>
                     </div>
                 `;
                 document.getElementById('modal').style.display = 'flex';
                 
-                // Меняем на зеленую галочку
+                // Меняем подарок на зеленую галочку
                 element.innerHTML = `
-                    <div style="width: 80px; height: 80px; border: 2px solid green; 
-                               border-radius: 10px; display: flex; align-items: center; 
-                               justify-content: center; font-size: 40px; color: green;">
+                    <div style="width: 80px; height: 80px; border: 3px solid #4caf50; 
+                               border-radius: 15px; display: flex; align-items: center; 
+                               justify-content: center; font-size: 40px; color: #4caf50; background: white;">
                         ✓
                     </div>
-                    <div style="margin-top: 5px; color: green; font-size: 14px;">
+                    <div style="margin-top: 8px; color: #4caf50; font-size: 14px; font-weight: bold;">
                         Открыт
                     </div>
                 `;
                 element.style.cursor = 'default';
                 
-                // Обновляем счетчики
-                document.getElementById('openedCount').textContent = data.opened_count;
-                document.getElementById('unopenedCount').textContent = data.unopened_count;
+                // Обновляем страницу через 2 секунды
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
                 
+                // Если открыли 3 подарка, показываем сообщение
+                if (data.opened_count >= 3) {
+                    setTimeout(() => {
+                        alert('🎉 Поздравляем! Вы открыли все доступные подарки! 🎉\n\nЧтобы продолжить, авторизуйтесь или воспользуйтесь кнопкой "Дед Мороз"');
+                    }, 1000);
+                }
+                
+            } else if (data.auth_required) {
+                // Показываем модальное окно для авторизации
+                showAuthModal();
             } else {
-                alert(data.error);
+                alert('❌ ' + data.error);
             }
         } catch (error) {
-            alert('Ошибка соединения');
+            alert('⚠️ Ошибка соединения с сервером.');
         }
     }
     
-    // Сброс игры
+    // Сброс игры (Дед Мороз)
     async function resetGame() {
-        if (confirm('Начать новую игру?')) {
-            try {
-                const response = await fetch('/lab9/reset', {method: 'POST'});
-                const data = await response.json();
-                
-                if (data.success) {
-                    location.reload();
+        if (!confirm('🎅 Дед Мороз наполнит все коробки заново и сбросит ваши открытые подарки.\n\nВы уверены?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/lab9/reset', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('✅ ' + data.message);
+                location.reload();
+            } else {
+                if (data.error && data.error.includes('Требуется авторизация')) {
+                    showAuthModal();
+                } else {
+                    alert('❌ ' + data.error || 'Ошибка сброса');
                 }
-            } catch (error) {
-                alert('Ошибка сброса');
             }
+        } catch (error) {
+            alert('⚠️ Ошибка соединения');
         }
     }
     
-    // Закрытие модального окна
+    // Модальные окна
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
+    }
+    
+    function showAuthModal() {
+        document.getElementById('authModal').style.display = 'flex';
+    }
+    
+    function closeAuthModal() {
+        document.getElementById('authModal').style.display = 'none';
     }
     
     // Закрытие по клику вне
@@ -160,9 +303,12 @@
         if (event.target.id === 'modal') {
             closeModal();
         }
+        if (event.target.id === 'authModal') {
+            closeAuthModal();
+        }
     });
     
-    // Fallback для картинок, которые не загрузились
+    // Fallback для картинок подарков
     document.addEventListener('DOMContentLoaded', function() {
         const images = document.querySelectorAll('img');
         images.forEach(img => {
@@ -170,9 +316,64 @@
                 this.onerror = null;
                 this.style.display = 'none';
                 const parent = this.parentElement;
-                parent.innerHTML = '<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px;">🎁</div>';
+                parent.innerHTML = '<div style="font-size: 40px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #ff9800;">🎁</div>';
             };
+        });
+        
+        // Анимация появления подарков
+        const gifts = document.querySelectorAll('[data-id]');
+        gifts.forEach((gift, index) => {
+            gift.style.opacity = '0';
+            gift.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                gift.style.transition = 'opacity 0.5s, transform 0.5s';
+                gift.style.opacity = '1';
+                gift.style.transform = 'scale(1)';
+            }, index * 100);
         });
     });
 </script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    button, a[style*="background"] {
+        transition: all 0.3s ease;
+    }
+    
+    button:hover, a[style*="background"]:hover {
+        transform: translateY(-3px);
+    }
+    
+    button:active, a[style*="background"]:active {
+        transform: translateY(-1px);
+    }
+    
+    @media (max-width: 768px) {
+        div[style*="position: absolute"] {
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            margin: 15px;
+            display: inline-block;
+        }
+        
+        div[style*="min-height: 500px"] {
+            min-height: auto !important;
+            text-align: center;
+            height: auto;
+            padding-bottom: 100px;
+        }
+        
+        button, a[style*="background"] {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+        }
+    }
+</style>
 {% endblock %}

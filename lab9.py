@@ -1,99 +1,143 @@
 from flask import Blueprint, render_template, jsonify, request, session
-import json
 import random
 
 lab9 = Blueprint('lab9', __name__, template_folder='templates')
 
-# 10 подарков с PNG картинками
+
 GIFTS = [
-    {"id": 1, "name": "Подарок 1", "message": "С Новым годом! 🎄", "image": "gift1.jpg"},
-    {"id": 2, "name": "Подарок 2", "message": "Удачи в учебе! 📚", "image": "gift2.png"},
-    {"id": 3, "name": "Подарок 3", "message": "Крепкого здоровья! 💪", "image": "gift3.png"},
-    {"id": 4, "name": "Подарок 4", "message": "Много счастья! 😊", "image": "gift4.png"},
-    {"id": 5, "name": "Подарок 5", "message": "Успехов во всем! 🌟", "image": "gift5.png"},
-    {"id": 6, "name": "Подарок 6", "message": "Верных друзей! 👫", "image": "gift6.png"},
-    {"id": 7, "name": "Подарок 7", "message": "Интересных идей! 💡", "image": "gift7.png"},
-    {"id": 8, "name": "Подарок 8", "message": "Финансового благополучия! 💰", "image": "gift8.png"},
-    {"id": 9, "name": "Подарок 9", "message": "Путешествий и впечатлений! ✈️", "image": "gift9.png"},
-    {"id": 10, "name": "Подарок 10", "message": "Уютного дома! 🏡", "image": "gift10.png"}
+    {"id": 1, "name": "Подарок 1", "message": "С Новым годом! 🎄 Пусть этот год принесет вам много радости и счастья!", "image": "gift1.jpg", "auth_required": False},
+    {"id": 2, "name": "Подарок 2", "message": "Удачи в учебе! 📚 Пусть знания даются легко, а экзамены сдаются на отлично!", "image": "gift2.png", "auth_required": False},
+    {"id": 3, "name": "Подарок 3", "message": "Крепкого здоровья! 💪 Пусть каждый день приносит бодрость и хорошее настроение!", "image": "gift3.png", "auth_required": True},
+    {"id": 4, "name": "Подарок 4", "message": "Много счастья! 😊 Пусть ваша жизнь будет наполнена улыбками и теплом близких!", "image": "gift4.png", "auth_required": False},
+    {"id": 5, "name": "Подарок 5", "message": "Успехов во всем! 🌟 Пусть любое начинание завершается победой!", "image": "gift5.png", "auth_required": False},
+    {"id": 6, "name": "Подарок 6", "message": "Верных друзей! 👫 Пусть рядом всегда будут те, кто поддержит в трудную минуту!", "image": "gift6.png", "auth_required": True},
+    {"id": 7, "name": "Подарок 7", "message": "Интересных идей! 💡 Пусть творчество и вдохновение никогда не покидают вас!", "image": "gift7.png", "auth_required": False},
+    {"id": 8, "name": "Подарок 8", "message": "Финансового благополучия! 💰 Пусть ваш кошелек всегда будет полон!", "image": "gift8.png", "auth_required": True},
+    {"id": 9, "name": "Подарок 9", "message": "Путешествий и впечатлений! ✈️ Пусть каждый день открывает новые горизонты!", "image": "gift9.png", "auth_required": False},
+    {"id": 10, "name": "Подарок 10", "message": "Уютного дома! 🏡 Пусть ваш дом всегда будет наполнен теплом и уютом!", "image": "gift10.png", "auth_required": True}
 ]
 
-def generate_non_overlapping_positions():
-    """Генерирует случайные позиции для 10 подарков без наложения"""
-    positions = []
-    grid_size = 6  # Сетка 6x6 для 10 подарков
-    cell_width = 15  # 15% ширины
-    cell_height = 15  # 15% высоты
-    
-    # Создаем сетку доступных позиций
-    grid_cells = []
-    for row in range(grid_size):
-        for col in range(grid_size):
-            left = 5 + col * cell_width
-            top = 10 + row * cell_height
-            grid_cells.append((left, top))
-    
-    # Выбираем 10 уникальных позиций
-    random.shuffle(grid_cells)
-    selected_cells = grid_cells[:10]
-    
-    for left, top in selected_cells:
-        positions.append({"left": left, "top": top})
-    
-    return positions
+# Глобальные хранилища в памяти сервера
+# Ключ: session_id, значение: данные пользователя
+gifts_state_storage = {}
+user_opened_count = {}
 
-@lab9.route('/lab9/')
-def index():
-    if 'gifts_state' not in session:
-        # Перемешиваем порядок подарков
+def get_session_id():
+    """Получает уникальный идентификатор сессии"""
+    if 'user_id' in session:
+        return f"user_{session['user_id']}"
+    else:
+        return f"guest_{session.get('_id', 'anonymous')}"
+
+def init_user_session():
+    """Инициализирует состояние подарков для пользователя"""
+    session_id = get_session_id()
+    
+    if session_id not in gifts_state_storage:
+        # Перемешиваем подарки в случайном порядке
         shuffled_gifts = GIFTS.copy()
         random.shuffle(shuffled_gifts)
         
-        # Генерируем позиции без наложения
-        positions = generate_non_overlapping_positions()
+        # Генерируем случайные позиции для 10 подарков
+        # Позиции сохраняются при каждом обновлении страницы
+        positions = []
+        used_positions = set()
         
-        # Сохраняем состояние
-        gifts_state = []
+        for _ in range(10):
+            while True:
+                left = random.randint(5, 85)  # Отступ от левого края 5-85%
+                top = random.randint(10, 70)  # Отступ от верхнего края 10-70%
+                position_key = f"{left}_{top}"
+                
+                # Проверяем, чтобы подарки не перекрывались сильно
+                too_close = False
+                for pos in positions:
+                    if abs(pos['left'] - left) < 15 and abs(pos['top'] - top) < 15:
+                        too_close = True
+                        break
+                
+                if not too_close and position_key not in used_positions:
+                    used_positions.add(position_key)
+                    positions.append({"left": left, "top": top})
+                    break
+        
+        # Сохраняем состояние подарков для пользователя
+        user_gifts = []
         for i, gift in enumerate(shuffled_gifts):
-            gifts_state.append({
+            user_gifts.append({
                 "id": gift["id"],
                 "name": gift["name"],
                 "opened": False,
                 "message": gift["message"],
                 "image": gift["image"],
+                "auth_required": gift["auth_required"],
                 "left": positions[i]["left"],
-                "top": positions[i]["top"]
+                "top": positions[i]["top"],
+                "available": True,
+                "tooltip": ""
             })
         
-        session['gifts_state'] = json.dumps(gifts_state, ensure_ascii=False)
-        session['opened_count'] = 0
+        gifts_state_storage[session_id] = user_gifts
+        user_opened_count[session_id] = 0
     
-    gifts = json.loads(session['gifts_state'])
-    opened_count = session.get('opened_count', 0)
-    unopened_count = len([g for g in gifts if not g['opened']])
+    return session_id
+
+def is_authenticated():
+    """Проверяет, авторизован ли пользователь"""
+    return 'user_id' in session
+
+def get_username():
+    """Возвращает имя пользователя"""
+    return session.get('login', 'Гость')
+
+@lab9.route('/lab9/')
+def index():
+    session_id = init_user_session()
+    
+    gifts = gifts_state_storage[session_id]
+    opened = user_opened_count.get(session_id, 0)
+    unopened = len([g for g in gifts if not g['opened']])
+    
+    # Проверяем авторизацию
+    authenticated = is_authenticated()
+    username = get_username()
+    
+    # Устанавливаем доступность подарков
+    for gift in gifts:
+        if gift['auth_required'] and not authenticated:
+            gift['available'] = False
+            gift['tooltip'] = "Требуется авторизация"
+        else:
+            gift['available'] = True
+            gift['tooltip'] = "Нажмите, чтобы открыть"
     
     return render_template('lab9/index.html', 
                          gifts=gifts,
-                         opened_count=opened_count,
-                         unopened_count=unopened_count)
+                         opened_count=opened,
+                         unopened_count=unopened,
+                         username=username,
+                         authenticated=authenticated)
 
 @lab9.route('/lab9/open', methods=['POST'])
 def open_gift():
     try:
-        gift_id = request.json.get('id')
+        data = request.get_json()
+        gift_id = data.get('id')
         
         if not gift_id:
-            return jsonify({"error": "Нет ID подарка"}), 400
+            return jsonify({"error": "Не указан ID подарка"}), 400
         
-        # Получаем данные из сессии
-        if 'gifts_state' not in session:
+        session_id = get_session_id()
+        authenticated = is_authenticated()
+        
+        if session_id not in gifts_state_storage:
             return jsonify({"error": "Сессия не найдена"}), 400
         
-        # Преобразуем строку JSON в список словарей
-        gifts = json.loads(session['gifts_state'])
-        opened_count = session.get('opened_count', 0)
+        gifts = gifts_state_storage[session_id]
+        opened = user_opened_count.get(session_id, 0)
         
-        if opened_count >= 3:
+        # Проверяем, не открыл ли пользователь уже 3 подарка
+        if opened >= 3:
             return jsonify({"error": "Вы уже открыли максимальное количество подарков (3)!"}), 400
         
         # Ищем подарок по ID
@@ -102,27 +146,29 @@ def open_gift():
                 if gift['opened']:
                     return jsonify({"error": "Этот подарок уже открыт!"}), 400
                 
-                # Обновляем состояние
+                # Проверяем доступность для авторизованных пользователей
+                if gift['auth_required'] and not authenticated:
+                    return jsonify({
+                        "error": "Этот подарок доступен только авторизованным пользователям!",
+                        "auth_required": True
+                    }), 403
+                
+                # Открываем подарок
                 gift['opened'] = True
-                opened_count += 1
+                opened += 1
                 
-                # Сохраняем в сессию
-                session['gifts_state'] = json.dumps(gifts, ensure_ascii=False)
-                session['opened_count'] = opened_count
-                session.modified = True
+                # Сохраняем состояние
+                user_opened_count[session_id] = opened
                 
-                # Формируем URL для картинки
-                image_url = f"/static/lab9/{gift['image']}"
-                
-                # Считаем оставшиеся
-                unopened_count = len([g for g in gifts if not g['opened']])
+                # Считаем оставшиеся подарки
+                unopened = len([g for g in gifts if not g['opened']])
                 
                 return jsonify({
                     "success": True,
                     "message": gift['message'],
-                    "image": image_url,
-                    "opened_count": opened_count,
-                    "unopened_count": unopened_count
+                    "image": f"/static/lab9/{gift['image']}",
+                    "opened_count": opened,
+                    "unopened_count": unopened
                 })
         
         return jsonify({"error": "Подарок не найден"}), 404
@@ -132,31 +178,62 @@ def open_gift():
 
 @lab9.route('/lab9/reset', methods=['POST'])
 def reset():
+    """Сброс игры - только для авторизованных пользователей"""
+    if not is_authenticated():
+        return jsonify({"error": "Требуется авторизация для использования функции 'Дед Мороз'"}), 401
+    
     try:
-        # Перемешиваем заново
+        session_id = get_session_id()
+        
+        # Перемешиваем подарки заново
         shuffled_gifts = GIFTS.copy()
         random.shuffle(shuffled_gifts)
         
-        # Новые позиции без наложения
-        positions = generate_non_overlapping_positions()
+        # Генерируем новые случайные позиции
+        positions = []
+        used_positions = set()
         
-        gifts_state = []
+        for _ in range(10):
+            while True:
+                left = random.randint(5, 85)
+                top = random.randint(10, 70)
+                position_key = f"{left}_{top}"
+                
+                too_close = False
+                for pos in positions:
+                    if abs(pos['left'] - left) < 15 and abs(pos['top'] - top) < 15:
+                        too_close = True
+                        break
+                
+                if not too_close and position_key not in used_positions:
+                    used_positions.add(position_key)
+                    positions.append({"left": left, "top": top})
+                    break
+        
+        # Создаем новые подарки
+        user_gifts = []
         for i, gift in enumerate(shuffled_gifts):
-            gifts_state.append({
+            user_gifts.append({
                 "id": gift["id"],
                 "name": gift["name"],
                 "opened": False,
                 "message": gift["message"],
                 "image": gift["image"],
+                "auth_required": gift["auth_required"],
                 "left": positions[i]["left"],
-                "top": positions[i]["top"]
+                "top": positions[i]["top"],
+                "available": True,
+                "tooltip": ""
             })
         
-        session['gifts_state'] = json.dumps(gifts_state, ensure_ascii=False)
-        session['opened_count'] = 0
-        session.modified = True
+        # Сбрасываем состояние
+        gifts_state_storage[session_id] = user_gifts
+        user_opened_count[session_id] = 0
         
-        return jsonify({"success": True, "message": "Подарки перемешаны!"})
+        return jsonify({
+            "success": True, 
+            "message": "🎅 Дед Мороз наполнил все коробки заново! 🎁"
+        })
         
     except Exception as e:
         return jsonify({"error": f"Ошибка сброса: {str(e)}"}), 500
