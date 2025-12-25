@@ -15,6 +15,7 @@ from lab6 import lab6
 from lab7 import lab7
 from lab8 import lab8
 from lab9 import lab9
+from rgz import rgz
 
 app = Flask(__name__)
 
@@ -44,6 +45,9 @@ else:
     db_path = path.join(dir_path, "yana_ku_orm.db")
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Инициализируем db с приложением
 db.init_app(app)
 
 app.register_blueprint(lab1)
@@ -55,6 +59,7 @@ app.register_blueprint(lab6)
 app.register_blueprint(lab7)
 app.register_blueprint(lab8)
 app.register_blueprint(lab9)
+app.register_blueprint(rgz)
 
 access_log = []
 
@@ -79,6 +84,7 @@ def start():
             <li><a href="/lab7">Седьмая лабораторная</a></li>
             <li><a href="/lab8">Восьмая лабораторная</a></li>
             <li><a href="/lab9">Девятая лабораторная</a></li>
+            <li><a href="/rgz">Расчетно-графическое задание (База бытовой техники)</a></li>
         </ul>
         <hr>
         <footer>
@@ -195,3 +201,13 @@ def internal_server_error(err):
     </body>
 </html>
 ''', 500
+
+# Создаем таблицы при запуске
+with app.app_context():
+    db.create_all()
+    # Инициализируем тестовые данные
+    from db.models import init_warehouse_data
+    init_warehouse_data()
+
+if __name__ == '__main__':
+    app.run(debug=True)

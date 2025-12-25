@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block lab %}Расчетно-графическое задание - Профиль{% endblock %}
+
+{% block main %}
+    <div class="user-info">
+        <h2>Личный кабинет</h2>
+        <p>Текущий пользователь: {{ session.get('warehouse_full_name', 'Гость') }}</p>
+    </div>
+
+    <div class="warehouse-nav">
+        <a href="/rgz" class="btn btn-secondary">Главная</a>
+        <a href="/rgz/products" class="btn btn-secondary">Товары</a>
+        <a href="/rgz/orders" class="btn btn-secondary">Заказы</a>
+        <a href="/rgz/cart" class="btn btn-secondary">Корзина</a>
+    </div>
+
+    <div class="content-container">
+        <div class="card">
+            <h3>Информация о пользователе</h3>
+            <div class="profile-info">
+                <p><strong>ФИО:</strong> {{ session.get('warehouse_full_name', 'Не указано') }}</p>
+                <p><strong>Логин:</strong> {{ session.get('warehouse_username', 'Не указано') }}</p>
+                <p><strong>Группа:</strong> {{ session.get('warehouse_group', 'Не указана') }}</p>
+                <p><strong>Статус:</strong> Активен</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Управление аккаунтом</h3>
+            <div class="danger-zone">
+                <h4 style="color: #e53e3e;">Опасная зона</h4>
+                <p>Удаление аккаунта приведет к невозможности восстановления данных.</p>
+                
+                <form id="deleteAccountForm" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтвердите пароль для удаления:</label>
+                        <input type="password" id="confirmPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Удалить аккаунт</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('deleteAccountForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!confirm('Вы уверены, что хотите удалить свой аккаунт?\nЭто действие необратимо!')) {
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            
+            const response = await fetch('/rgz/api/profile/delete', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Аккаунт успешно удален');
+                window.location.href = '/rgz';
+            } else {
+                alert('Ошибка: ' + result.error);
+            }
+        });
+    </script>
+
+    <style>
+        .profile-info {
+            padding: 15px 0;
+        }
+        
+        .profile-info p {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 6px;
+            color: #4a5568;
+        }
+        
+        .danger-zone {
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            padding: 20px;
+            background: #fff5f5;
+        }
+        
+        .danger-zone p {
+            color: #742a2a;
+        }
+    </style>
+{% endblock %}

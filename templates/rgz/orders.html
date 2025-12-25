@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block lab %}Расчетно-графическое задание - Заказы{% endblock %}
+
+{% block main %}
+    <div class="user-info">
+        <h2>Управление заказами</h2>
+        <p>Текущий пользователь: {{ session.get('warehouse_full_name', 'Гость') }}</p>
+    </div>
+
+    <div class="warehouse-nav">
+        <a href="/rgz" class="btn btn-secondary">Главная</a>
+        <a href="/rgz/products" class="btn btn-secondary">Товары</a>
+        <a href="/rgz/cart" class="btn btn-secondary">Корзина</a>
+        <a href="/rgz/profile" class="btn btn-secondary">Профиль</a>
+    </div>
+
+    <div class="card">
+        <h3>Список заказов</h3>
+        <div id="ordersList">
+            <div id="ordersLoading">Загрузка заказов...</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadOrders() {
+            const response = await fetch('/rgz/api/orders');
+            const data = await response.json();
+            
+            const ordersList = document.getElementById('ordersList');
+            const loading = document.getElementById('ordersLoading');
+            
+            if (data.orders.length === 0) {
+                ordersList.innerHTML = '<p>Заказов нет</p>';
+                return;
+            }
+            
+            loading.style.display = 'none';
+            
+            // Отображение заказов
+            data.orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'order-item';
+                
+                const statusClass = order.status === 'оплачен' ? 'status-paid' : 'status-unpaid';
+                const statusText = order.status === 'оплачен' ? 'Оплачен' : 'Неоплачен';
+                
+                orderDiv.innerHTML = `
+                    <div class="order-header">
+                        <h4>Заказ #${order.id}</h4>
+                        <span class="order-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="order-details">
+                        <p><strong>Дата:</strong> ${order.created_at}</p>
+                        <p><strong>Товаров:</strong> ${order.items_count} шт.</p>
+                        <p><strong>Сумма:</strong> ${order.total_amount.toFixed(2)} руб.</p>
+                    </div>
+                    <div class="order-actions">
+                        ${order.status === 'неоплачен' ? 
+                            `<button onclick="payOrder(${order.id})" class="btn btn-small btn-success">
+                                Отметить как оплаченный
+                            </button>` : 
+                            ''
+                        }
+                    </div>
+                `;
+                ordersList.appendChild(orderDiv);
+            });
+        }
+        
+        async function payOrder(orderId) {
+            if (!confirm('Вы уверены, что хотите отметить заказ как оплаченный?\nЭто уменьшит количество товаров на складе.')) return;
+            
+            const response = await fetch(`/rgz/api/orders/${orderId}/pay`, {
+                method: 'POST'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Заказ отмечен как оплаченный');
+                loadOrders();
+            } else {
+                alert('Ошибка: ' + result.error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+
+    <style>
+        .order-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .order-header h4 {
+            margin: 0;
+            color: #2d3748;
+        }
+        
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .status-paid {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-unpaid {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .order-details p {
+            margin: 0;
+            color: #4a5568;
+        }
+        
+        .order-actions {
+            text-align: right;
+        }
+        
+        #ordersLoading {
+            text-align: center;
+            padding: 30px;
+            color: #718096;
+        }
+    </style>
+{% endblock %}
